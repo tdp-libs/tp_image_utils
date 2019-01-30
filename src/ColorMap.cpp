@@ -9,11 +9,14 @@ namespace tp_image_utils
 {
 
 //##################################################################################################
-ColorMap::ColorMap(size_t w, size_t h):
+ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data):
   m_width(w),
   m_height(h)
 {
   m_data.resize(w*h, TPPixel());
+
+  if(data)
+    memcpy(m_data.data(), data, m_data.size()*sizeof(TPPixel));
 }
 
 //##################################################################################################
