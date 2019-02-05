@@ -38,6 +38,12 @@ TPPixel* ColorMap::data()
 }
 
 //##################################################################################################
+const std::vector<TPPixel>& ColorMap::constDataVector() const
+{
+  return m_data;
+}
+
+//##################################################################################################
 size_t ColorMap::width()const
 {
   return m_width;
