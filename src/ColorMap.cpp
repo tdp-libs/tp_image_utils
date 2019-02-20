@@ -123,6 +123,20 @@ ColorMap ColorMap::rotate90CCW()const
 }
 
 //##################################################################################################
+ColorMap ColorMap::flipped()const
+{
+  ColorMap dst(m_width, m_height);
+
+  size_t sh = m_height-1;
+
+  for(size_t y=0; y<m_height; y++)
+    for(size_t x=0; x<m_width; x++)
+      dst.setPixel(x, sh-y, pixel(x, y));
+
+  return dst;
+}
+
+//##################################################################################################
 std::vector<TPPixel> ColorMap::extractRow(size_t y)const
 {
   std::vector<TPPixel> result;
