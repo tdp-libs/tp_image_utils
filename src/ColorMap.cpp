@@ -75,6 +75,12 @@ TPPixel ColorMap::pixel(size_t x, size_t y)const
 }
 
 //##################################################################################################
+TPPixel& ColorMap::pixelRef(size_t x, size_t y)
+{
+  return m_data.at((y*m_width) + x);
+}
+
+//##################################################################################################
 ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom)const
 {
   left   = tpBound(size_t(0), left,   m_width -1);
