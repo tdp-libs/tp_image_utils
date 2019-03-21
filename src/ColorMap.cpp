@@ -3,90 +3,151 @@
 #include <vector>
 #include <sstream>
 #include <cstring>
-#include <stdint.h>
+#include <atomic>
 
 namespace tp_image_utils
 {
 
 //##################################################################################################
-ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data):
-  m_width(w),
-  m_height(h)
+struct ColorMap::Private
 {
-  m_data.resize(w*h, TPPixel());
+  std::vector<TPPixel> data;
+  size_t width;
+  size_t height;
+
+  std::atomic_int refCount{1};
+
+  //################################################################################################
+  void detach(ColorMap* q)
+  {
+    if(refCount==1)
+      return;
+
+    auto newSD = new Private();
+    newSD->data = data;
+    newSD->width = width;
+    newSD->height = height;
+
+    if(refCount.fetch_sub(1)==1)
+      delete this;
+
+    q->sd = newSD;
+  }
+};
+
+//##################################################################################################
+ColorMap::ColorMap(const ColorMap& other):
+  sd(other.sd)
+{
+  sd->refCount++;
+}
+
+//##################################################################################################
+ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data):
+  sd(new Private())
+{  
+  sd->width = w;
+  sd->height = h;
+  sd->data.resize(w*h, TPPixel());
 
   if(data)
-    memcpy(m_data.data(), data, m_data.size()*sizeof(TPPixel));
+    memcpy(sd->data.data(), data, sd->data.size()*sizeof(TPPixel));
+}
+
+//##################################################################################################
+ColorMap::~ColorMap()
+{
+  if(sd->refCount.fetch_sub(1)==1)
+    delete sd;
+}
+
+//##################################################################################################
+ColorMap& ColorMap::operator=(const ColorMap& other)
+{
+  if(sd == other.sd)
+    return *this;
+
+  if(sd->refCount.fetch_sub(1)==1)
+    delete sd;
+
+  sd = other.sd;
+  sd->refCount++;
+
+  return *this;
 }
 
 //##################################################################################################
 void ColorMap::fill(TPPixel value)
 {
-  std::fill(m_data.begin(), m_data.end(), value);
+  sd->detach(this);
+  std::fill(sd->data.begin(), sd->data.end(), value);
 }
 
 //##################################################################################################
 const TPPixel* ColorMap::constData() const
 {
-  return m_data.data();
+  return sd->data.data();
 }
 
 //##################################################################################################
 TPPixel* ColorMap::data()
 {
-  return m_data.data();
+  sd->detach(this);
+  return sd->data.data();
 }
 
 //##################################################################################################
 const std::vector<TPPixel>& ColorMap::constDataVector() const
 {
-  return m_data;
+  return sd->data;
 }
 
 //##################################################################################################
-size_t ColorMap::width()const
+size_t ColorMap::width() const
 {
-  return m_width;
+  return sd->width;
 }
 
 //##################################################################################################
-size_t ColorMap::height()const
+size_t ColorMap::height() const
 {
-  return m_height;
+  return sd->height;
 }
 
 //##################################################################################################
-size_t ColorMap::size()const
+size_t ColorMap::size() const
 {
-  return m_data.size();
+  return sd->data.size();
 }
 
 //##################################################################################################
 void ColorMap::setPixel(size_t x, size_t y, TPPixel value)
 {
-  if(x<m_width && y<m_height)
-    m_data[(y*m_width) + x] = value;
+  sd->detach(this);
+  if(x<sd->width && y<sd->height)
+    sd->data[(y*sd->width) + x] = value;
 }
 
 //##################################################################################################
-TPPixel ColorMap::pixel(size_t x, size_t y)const
+TPPixel ColorMap::pixel(size_t x, size_t y) const
 {
-  return (x<m_width && y<m_height)?m_data.at((y*m_width) + x):TPPixel();
+  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):TPPixel();
 }
 
 //##################################################################################################
 TPPixel& ColorMap::pixelRef(size_t x, size_t y)
 {
-  return m_data.at((y*m_width) + x);
+  sd->detach(this);
+  return sd->data.at((y*sd->width) + x);
 }
 
 //##################################################################################################
-ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom)const
+ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom) const
 {
-  left   = tpBound(size_t(0), left,   m_width -1);
-  top    = tpBound(size_t(0), top,    m_height-1);
-  right  = tpBound(size_t(0), right,  m_width );
-  bottom = tpBound(size_t(0), bottom, m_height);
+  left   = tpBound(size_t(0), left,   sd->width -1);
+  top    = tpBound(size_t(0), top,    sd->height-1);
+  right  = tpBound(size_t(0), right,  sd->width );
+  bottom = tpBound(size_t(0), bottom, sd->height);
 
   size_t width  = tpMax(size_t(1), right - left);
   size_t height = tpMax(size_t(1), bottom - top);
@@ -101,73 +162,73 @@ ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom
 }
 
 //##################################################################################################
-ColorMap ColorMap::rotate90CW()const
+ColorMap ColorMap::rotate90CW() const
 {
-  ColorMap dst(m_height, m_width);
+  ColorMap dst(sd->height, sd->width);
 
-  size_t sh = m_height-1;
+  size_t sh = sd->height-1;
 
-  for(size_t y=0; y<m_height; y++)
-    for(size_t x=0; x<m_width; x++)
+  for(size_t y=0; y<sd->height; y++)
+    for(size_t x=0; x<sd->width; x++)
       dst.setPixel(sh-y, x, pixel(x, y));
 
   return dst;
 }
 
 //##################################################################################################
-ColorMap ColorMap::rotate90CCW()const
+ColorMap ColorMap::rotate90CCW() const
 {
-  ColorMap dst(m_height, m_width);
+  ColorMap dst(sd->height, sd->width);
 
-  size_t sw = m_width-1;
+  size_t sw = sd->width-1;
 
-  for(size_t y=0; y<m_height; y++)
-    for(size_t x=0; x<m_width; x++)
+  for(size_t y=0; y<sd->height; y++)
+    for(size_t x=0; x<sd->width; x++)
       dst.setPixel(y, sw-x, pixel(x, y));
 
   return dst;
 }
 
 //##################################################################################################
-ColorMap ColorMap::flipped()const
+ColorMap ColorMap::flipped() const
 {
-  ColorMap dst(m_width, m_height);
+  ColorMap dst(sd->width, sd->height);
 
-  size_t sh = m_height-1;
+  size_t sh = sd->height-1;
 
-  for(size_t y=0; y<m_height; y++)
-    for(size_t x=0; x<m_width; x++)
+  for(size_t y=0; y<sd->height; y++)
+    for(size_t x=0; x<sd->width; x++)
       dst.setPixel(x, sh-y, pixel(x, y));
 
   return dst;
 }
 
 //##################################################################################################
-std::vector<TPPixel> ColorMap::extractRow(size_t y)const
+std::vector<TPPixel> ColorMap::extractRow(size_t y) const
 {
   std::vector<TPPixel> result;
-  if(m_width>0 && m_height>0 && y<m_height)
+  if(sd->width>0 && sd->height>0 && y<sd->height)
   {
-    result.resize(m_width);
-    const TPPixel* s = m_data.data()+(y*m_width);
+    result.resize(sd->width);
+    const TPPixel* s = sd->data.data()+(y*sd->width);
     TPPixel* d = result.data();
-    std::memcpy(d, s, m_width);
+    std::memcpy(d, s, sd->width);
   }
   return result;
 }
 
 //##################################################################################################
-std::vector<TPPixel> ColorMap::extractColumn(size_t x)const
+std::vector<TPPixel> ColorMap::extractColumn(size_t x) const
 {
   std::vector<TPPixel> result;
-  if(m_width>0 && m_height>0 && x<m_width)
+  if(sd->width>0 && sd->height>0 && x<sd->width)
   {
-    result.resize(m_height);
-    const TPPixel* s = m_data.data()+x;
+    result.resize(sd->height);
+    const TPPixel* s = sd->data.data()+x;
     TPPixel* d = result.data();
-    TPPixel* dMax = d + m_height;
+    TPPixel* dMax = d + sd->height;
 
-    for(; d<dMax; d++, s+=m_width)
+    for(; d<dMax; d++, s+=sd->width)
       *d = *s;
   }
   return result;
@@ -176,24 +237,26 @@ std::vector<TPPixel> ColorMap::extractColumn(size_t x)const
 //##################################################################################################
 void ColorMap::setRow(size_t y, const std::vector<TPPixel>& values)
 {
-  if(m_width>0 && m_height>0 && y<m_height && values.size() == m_width)
+  sd->detach(this);
+  if(sd->width>0 && sd->height>0 && y<sd->height && values.size() == sd->width)
   {
     const TPPixel* s = values.data();
-    TPPixel* d = m_data.data()+(y*m_width);
-    std::memcpy(d, s, m_width);
+    TPPixel* d = sd->data.data()+(y*sd->width);
+    std::memcpy(d, s, sd->width);
   }
 }
 
 //##################################################################################################
 void ColorMap::setColumn(size_t x, const std::vector<TPPixel>& values)
 {
-  if(m_width>0 && m_height>0 && x<m_width && values.size() == m_height)
+  sd->detach(this);
+  if(sd->width>0 && sd->height>0 && x<sd->width && values.size() == sd->height)
   {
-    TPPixel* d = m_data.data()+x;
+    TPPixel* d = sd->data.data()+x;
     const TPPixel* s = values.data();
-    const TPPixel* sMax = s + m_height;
+    const TPPixel* sMax = s + sd->height;
 
-    for(; s<sMax; s++, d+=m_width)
+    for(; s<sMax; s++, d+=sd->width)
       *d = *s;
   }
 }
@@ -201,9 +264,11 @@ void ColorMap::setColumn(size_t x, const std::vector<TPPixel>& values)
 //##################################################################################################
 void ColorMap::setSize(size_t width, size_t height)
 {
-  m_width  = width;
-  m_height = height;
-  m_data.resize(width*height);
+  sd->detach(this);
+  sd->width  = width;
+  sd->height = height;
+  sd->data.resize(width*height);
 }
+
 
 }

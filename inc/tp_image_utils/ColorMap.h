@@ -14,7 +14,16 @@ class ColorMap
 {
 public:
   //################################################################################################
+  ColorMap(const ColorMap& other);
+
+  //################################################################################################
   ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr);
+
+  //################################################################################################
+  ~ColorMap();
+
+  //################################################################################################
+  ColorMap& operator=(const ColorMap& other);
 
   //################################################################################################
   void fill(TPPixel value);
@@ -78,9 +87,9 @@ public:
   void setSize(size_t width, size_t height);
 
 private:
-  std::vector<TPPixel> m_data;
-  size_t m_width;
-  size_t m_height;
+  struct Private;
+  friend struct Private;
+  Private* sd;
 };
 }
 
