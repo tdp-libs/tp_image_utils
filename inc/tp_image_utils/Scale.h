@@ -41,10 +41,10 @@ struct ColorMapBase
 
   virtual std::string name()=0;
   virtual TPPixel operator()(std::function<TPPixel(int x, int y)> getPixel,
-                           double x1,
-                           double y1,
-                           double x2,
-                           double y2) = 0;
+                             double x1,
+                             double y1,
+                             double x2,
+                             double y2) = 0;
 };
 
 //##################################################################################################
@@ -85,10 +85,10 @@ struct ColorMapDefault : public ColorMapBase
   std::string name() override;
 
   TPPixel operator()(std::function<TPPixel(int x, int y)> getPixel,
-                   double x1,
-                   double y1,
-                   double x2,
-                   double y2)override
+                     double x1,
+                     double y1,
+                     double x2,
+                     double y2)override
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
