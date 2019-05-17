@@ -217,12 +217,12 @@ Container scale(const Container& src,
   double py=0.0;
   for(size_t y=0; y<height; y++)
   {
-    double sy = (double(y) * fy)-oy;
+    double sy = (double(y+1) * fy)-oy;
 
     double px=0.0;
     for(size_t x=0; x<width; x++)
     {
-      double sx = (double(x) * fx)-ox;
+      double sx = (double(x+1) * fx)-ox;
       result.setPixel(x, y, calculatePixel(_getPixel, px, py, sx, sy));
       px=sx;
     }

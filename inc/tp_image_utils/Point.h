@@ -48,7 +48,8 @@ struct Point
 {
   PointType type;
   float x;
-  float y;
+  float y;  
+  TPPixel color{255, 0, 0};
 
   //################################################################################################
   Point();
