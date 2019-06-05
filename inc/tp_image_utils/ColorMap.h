@@ -83,6 +83,12 @@ public:
   void setColumn(size_t x, const std::vector<TPPixel>& values);
 
   //################################################################################################
+  void setRow(size_t y, TPPixel value);
+
+  //################################################################################################
+  void setColumn(size_t x, TPPixel value);
+
+  //################################################################################################
   //! Simply sets the sise of the image, does NOT scale the contents
   void setSize(size_t width, size_t height);
 

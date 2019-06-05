@@ -262,6 +262,33 @@ void ColorMap::setColumn(size_t x, const std::vector<TPPixel>& values)
 }
 
 //##################################################################################################
+void ColorMap::setRow(size_t y, TPPixel value)
+{
+  sd->detach(this);
+  if(sd->width>0 && sd->height>0 && y<sd->height)
+  {
+    TPPixel* d = sd->data.data()+(y*sd->width);
+    TPPixel* dMax = d+sd->width;
+    for(; d<dMax; d++)
+      (*d) = value;
+  }
+}
+
+//##################################################################################################
+void ColorMap::setColumn(size_t x, TPPixel value)
+{
+  sd->detach(this);
+  if(sd->width>0 && sd->height>0 && x<sd->width)
+  {
+    TPPixel* d = sd->data.data()+x;
+    TPPixel* dMax = sd->data.data()+sd->data.size();
+
+    for(; d<dMax; d+=sd->width)
+      (*d) = value;
+  }
+}
+
+//##################################################################################################
 void ColorMap::setSize(size_t width, size_t height)
 {
   sd->detach(this);
