@@ -23,7 +23,7 @@ ByteMap::ByteMap(const ColorMap& img):
 
   const TPPixel* s = img.constData();
   const TPPixel* sMax = s + img.size();
-  uint8_t* d = reinterpret_cast<uint8_t*>(&m_data[0]);
+  auto* d = reinterpret_cast<uint8_t*>(&m_data[0]);
   while(s<sMax)
   {
     (*d) = s->r;
@@ -87,7 +87,7 @@ ColorMap ByteMap::toImage()const
 {
   ColorMap dst(m_width, m_height);
 
-  const uint8_t* s = reinterpret_cast<const uint8_t*>(m_data.data());
+  const auto* s = reinterpret_cast<const uint8_t*>(m_data.data());
   TPPixel* d = dst.data();
   TPPixel* dMax = d + dst.size();
 
@@ -162,7 +162,7 @@ std::vector<uint8_t> ByteMap::extractRow(size_t y)const
   if(m_width>0 && m_height>0 && y<m_height)
   {
     result.resize(m_width);
-    const uint8_t* s = reinterpret_cast<const uint8_t*>(m_data.data())+(y*m_width);
+    const auto* s = reinterpret_cast<const uint8_t*>(m_data.data())+(y*m_width);
     uint8_t* d = result.data();
     memcpy(d, s, m_width);
   }
@@ -176,7 +176,7 @@ std::vector<uint8_t> ByteMap::extractColumn(size_t x)const
   if(m_width>0 && m_height>0 && x<m_width)
   {
     result.resize(m_height);
-    const uint8_t* s = reinterpret_cast<const uint8_t*>(m_data.data())+x;
+    const auto* s = reinterpret_cast<const uint8_t*>(m_data.data())+x;
     uint8_t* d = result.data();
     uint8_t* dMax = d + m_height;
 
@@ -192,7 +192,7 @@ void ByteMap::setRow(size_t y, const std::vector<uint8_t>& values)
   if(m_width>0 && m_height>0 && y<m_height && values.size() == m_width)
   {
     const uint8_t* s = values.data();
-    uint8_t* d = reinterpret_cast<uint8_t*>(m_data.data())+(y*m_width);
+    auto* d = reinterpret_cast<uint8_t*>(m_data.data())+(y*m_width);
     memcpy(d, s, m_width);
   }
 }
@@ -202,7 +202,7 @@ void ByteMap::setColumn(size_t x, const std::vector<uint8_t>& values)
 {
   if(m_width>0 && m_height>0 && x<m_width && values.size() == m_height)
   {
-    uint8_t* d = reinterpret_cast<uint8_t*>(m_data.data())+x;
+    auto* d = reinterpret_cast<uint8_t*>(m_data.data())+x;
     const uint8_t* s = values.data();
     const uint8_t* sMax = s + m_height;
 
