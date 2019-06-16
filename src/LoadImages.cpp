@@ -49,9 +49,9 @@ std::vector<ColorMap> loadImages(const std::string& path, std::vector<std::strin
 //##################################################################################################
 ColorMap loadImageFromJson(const nlohmann::json& j)
 {
-  size_t w = tp_utils::getJSONValue<size_t>(j, "w", 0);
-  size_t h = tp_utils::getJSONValue<size_t>(j, "h", 0);
-  std::string data = tp_utils::getJSONValue<std::string>(j, "data", "");
+  auto w = tp_utils::getJSONValue<size_t>(j, "w", 0);
+  auto h = tp_utils::getJSONValue<size_t>(j, "h", 0);
+  auto data = tp_utils::getJSONValue<std::string>(j, "data", "");
 
   if(w<1 || h<1)
     return ColorMap();
@@ -71,9 +71,9 @@ ColorMap loadImageFromJson(const nlohmann::json& j)
 //##################################################################################################
 ByteMap loadByteMapFromJson(const nlohmann::json& j)
 {  
-  size_t w = tp_utils::getJSONValue<size_t>(j, "w", 0);
-  size_t h = tp_utils::getJSONValue<size_t>(j, "h", 0);
-  std::string data = tp_utils::getJSONValue<std::string>(j, "data", "");
+  auto w = tp_utils::getJSONValue<size_t>(j, "w", 0);
+  auto h = tp_utils::getJSONValue<size_t>(j, "h", 0);
+  auto data = tp_utils::getJSONValue<std::string>(j, "data", "");
 
   if(w<1 || h<1)
     return ByteMap();
@@ -137,7 +137,7 @@ std::vector<std::vector<float>> imagesToFloatRGB(const std::vector<ColorMap>& im
     else if(image.width()!=width || image.height()!=height)
       image = scale(image, width, height);
 
-    results.push_back(std::vector<float>());
+    results.emplace_back();
     std::vector<float>& dest = results[results.size()-1];
     dest.reserve(imageSize);
 
@@ -147,7 +147,7 @@ std::vector<std::vector<float>> imagesToFloatRGB(const std::vector<ColorMap>& im
     {
       for(size_t x=0; x<xMax; x++)
       {
-        TPPixel p= image.pixel(x, y);
+        TPPixel p = image.pixel(x, y);
         dest.push_back(p.r);
         dest.push_back(p.g);
         dest.push_back(p.b);
@@ -170,7 +170,7 @@ std::vector<std::vector<uint8_t>> imagesToCharRGB(const std::vector<ColorMap>& i
     if(image.width()!=width || image.height()!=height)
       image = scale(image, width, height);
 
-    results.push_back(std::vector<uint8_t>());
+    results.emplace_back();
     std::vector<uint8_t>& dest = results[results.size()-1];
     dest.reserve(imageSize);
 

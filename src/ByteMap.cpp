@@ -11,7 +11,7 @@ ByteMap::ByteMap(size_t w, size_t h):
   m_width(w),
   m_height(h)
 {
-  m_data.resize(w*h);
+  m_data.resize(m_width*m_height);
 }
 
 //################################################################################################
@@ -23,7 +23,7 @@ ByteMap::ByteMap(const ColorMap& img):
 
   const TPPixel* s = img.constData();
   const TPPixel* sMax = s + img.size();
-  auto* d = reinterpret_cast<uint8_t*>(&m_data[0]);
+  auto d = m_data.data();
   while(s<sMax)
   {
     (*d) = s->r;
@@ -35,20 +35,20 @@ ByteMap::ByteMap(const ColorMap& img):
 //##################################################################################################
 void ByteMap::fill(uint8_t value)
 {
-  if(m_data.size()>0)
+  if(!m_data.empty())
     memset(&m_data[0], value, m_data.size());
 }
 
 //##################################################################################################
 const uint8_t* ByteMap::constData()const
 {
-  return reinterpret_cast<const uint8_t*>(m_data.data());
+  return m_data.data();
 }
 
 //##################################################################################################
 uint8_t* ByteMap::data()
 {
-  return reinterpret_cast<uint8_t*>(&m_data[0]);
+  return m_data.data();
 }
 
 //##################################################################################################
@@ -73,13 +73,13 @@ size_t ByteMap::size()const
 void ByteMap::setPixel(size_t x, size_t y, uint8_t value)
 {
   if(x<m_width && y<m_height)
-    reinterpret_cast<uint8_t&>(m_data[(y*m_width)+x])=value;
+    m_data[(y*m_width)+x]=value;
 }
 
 //##################################################################################################
 uint8_t ByteMap::pixel(size_t x, size_t y)const
 {
-  return ((x<m_width && y<m_height)?(*reinterpret_cast<const uint8_t*>(m_data.data()+((y*m_width)+x))):0);
+  return (x<m_width && y<m_height)?(*(m_data.data()+((y*m_width)+x))):0;
 }
 
 //##################################################################################################
@@ -87,7 +87,7 @@ ColorMap ByteMap::toImage()const
 {
   ColorMap dst(m_width, m_height);
 
-  const auto* s = reinterpret_cast<const uint8_t*>(m_data.data());
+  const auto* s = m_data.data();
   TPPixel* d = dst.data();
   TPPixel* dMax = d + dst.size();
 
@@ -162,7 +162,7 @@ std::vector<uint8_t> ByteMap::extractRow(size_t y)const
   if(m_width>0 && m_height>0 && y<m_height)
   {
     result.resize(m_width);
-    const auto* s = reinterpret_cast<const uint8_t*>(m_data.data())+(y*m_width);
+    const auto* s = m_data.data()+(y*m_width);
     uint8_t* d = result.data();
     memcpy(d, s, m_width);
   }
@@ -176,7 +176,7 @@ std::vector<uint8_t> ByteMap::extractColumn(size_t x)const
   if(m_width>0 && m_height>0 && x<m_width)
   {
     result.resize(m_height);
-    const auto* s = reinterpret_cast<const uint8_t*>(m_data.data())+x;
+    const auto* s = m_data.data()+x;
     uint8_t* d = result.data();
     uint8_t* dMax = d + m_height;
 
@@ -192,7 +192,7 @@ void ByteMap::setRow(size_t y, const std::vector<uint8_t>& values)
   if(m_width>0 && m_height>0 && y<m_height && values.size() == m_width)
   {
     const uint8_t* s = values.data();
-    auto* d = reinterpret_cast<uint8_t*>(m_data.data())+(y*m_width);
+    auto* d = m_data.data()+(y*m_width);
     memcpy(d, s, m_width);
   }
 }
@@ -202,7 +202,7 @@ void ByteMap::setColumn(size_t x, const std::vector<uint8_t>& values)
 {
   if(m_width>0 && m_height>0 && x<m_width && values.size() == m_height)
   {
-    auto* d = reinterpret_cast<uint8_t*>(m_data.data())+x;
+    auto* d = m_data.data()+x;
     const uint8_t* s = values.data();
     const uint8_t* sMax = s + m_height;
 

@@ -83,8 +83,9 @@ std::string serializeGrid(const Grid& grid)
 std::vector<Grid> deserializeGrids(const std::vector<std::string>& data)
 {
   std::vector<Grid> result;
+  result.reserve(data.size());
   for(const std::string& grid : data)
-    result.push_back(deserializeGrid(grid));
+    result.emplace_back(deserializeGrid(grid));
   return result;
 }
 
@@ -92,8 +93,9 @@ std::vector<Grid> deserializeGrids(const std::vector<std::string>& data)
 std::vector<std::string> serializeGrids(const std::vector<Grid>& grids)
 {
   std::vector<std::string> result;
+  result.reserve(grids.size());
   for(const Grid& grid : grids)
-    result.push_back(serializeGrid(grid));
+    result.emplace_back(serializeGrid(grid));
   return result;
 }
 

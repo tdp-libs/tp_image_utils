@@ -71,7 +71,7 @@ public:
   void setColumn(size_t x, const std::vector<uint8_t>& values);
 
 private:
-  std::string m_data;
+  std::vector<uint8_t> m_data;
   size_t m_width;
   size_t m_height;
 };

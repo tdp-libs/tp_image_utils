@@ -1,6 +1,6 @@
 #include "tp_image_utils/Point.h"
 
-#include <math.h>
+#include <cmath>
 
 namespace tp_image_utils
 {
@@ -58,7 +58,7 @@ Point::Point(PointType type_, float x_, float y_):
 //##################################################################################################
 float Point::length()const
 {
-  return sqrt((x*x) + (y*y));
+  return std::sqrt((x*x) + (y*y));
 }
 
 //##################################################################################################
@@ -78,8 +78,8 @@ bool Point::normalize()
 //##################################################################################################
 void Point::rotate(float radians)
 {
-  float rx = x*cos(radians) - y*sin(radians);
-  y = y*cos(radians) + x*sin(radians);
+  float rx = x*std::cos(radians) - y*std::sin(radians);
+  y = y*std::cos(radians) + x*std::sin(radians);
   x = rx;
 }
 
@@ -194,7 +194,7 @@ std::vector<LineCollection> deserializeLineCollections(const nlohmann::json& j)
 //##################################################################################################
 nlohmann::json serializeLineCollections(const std::vector<LineCollection>& lineCollections)
 {
-  std::vector<std::string> result;
+  nlohmann::json result = nlohmann::json::array();
   for(const LineCollection& lineCollection : lineCollections)
     result.push_back(serializeLineCollection(lineCollection));
   return result;

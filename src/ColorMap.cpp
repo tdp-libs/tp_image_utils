@@ -12,8 +12,8 @@ namespace tp_image_utils
 struct ColorMap::Private
 {
   std::vector<TPPixel> data;
-  size_t width;
-  size_t height;
+  size_t width{0};
+  size_t height{0};
 
   std::atomic_int refCount{1};
 
