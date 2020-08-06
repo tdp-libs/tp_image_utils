@@ -20,6 +20,9 @@ ColorMap loadImage(const std::string& path);
 ColorMap loadImageFromData(const std::string& data);
 
 //##################################################################################################
+ColorMap loadImageFromResource(const std::string& path);
+
+//##################################################################################################
 std::vector<std::string> imagePaths(const std::string& path);
 
 //##################################################################################################

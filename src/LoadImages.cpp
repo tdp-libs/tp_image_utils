@@ -3,6 +3,7 @@
 
 #include "tp_utils/DebugUtils.h"
 #include "tp_utils/JSONUtils.h"
+#include "tp_utils/Resources.h"
 
 #include "base64.h"
 
@@ -25,6 +26,13 @@ ColorMap loadImage(const std::string& path)
 ColorMap loadImageFromData(const std::string& data)
 {
   return (loadImageFromData_)?loadImageFromData_(data):ColorMap();
+}
+
+//##################################################################################################
+ColorMap loadImageFromResource(const std::string& path)
+{
+  auto res = tp_utils::resource(path);
+  return res.data?loadImageFromData(std::string(res.data, res.size)):ColorMap();
 }
 
 //##################################################################################################
