@@ -56,7 +56,7 @@ Point::Point(PointType type_, float x_, float y_):
 }
 
 //##################################################################################################
-float Point::length()const
+float Point::length() const
 {
   return std::sqrt((x*x) + (y*y));
 }

@@ -30,39 +30,39 @@ public:
   uint8_t* data();
 
   //################################################################################################
-  size_t width()const;
+  size_t width() const;
 
   //################################################################################################
-  size_t height()const;
+  size_t height() const;
 
   //################################################################################################
-  size_t size()const;
+  size_t size() const;
 
   //################################################################################################
   void setPixel(size_t x, size_t y, uint8_t value);
 
   //################################################################################################
-  uint8_t pixel(size_t x, size_t y)const;
+  uint8_t pixel(size_t x, size_t y) const;
 
   //################################################################################################
-  ColorMap toImage()const;
+  ColorMap toImage() const;
 
   //################################################################################################
-  ByteMap subImage(size_t left, size_t top, size_t right, size_t bottom)const;
+  ByteMap subImage(size_t left, size_t top, size_t right, size_t bottom) const;
 
   //################################################################################################
   //! Rotate the image 90 degrees clockwise
-  ByteMap rotate90CW()const;
+  ByteMap rotate90CW() const;
 
   //################################################################################################
   //! Rotate the image 90 degrees counter clockwise
-  ByteMap rotate90CCW()const;
+  ByteMap rotate90CCW() const;
 
   //################################################################################################
-  std::vector<uint8_t> extractRow(size_t y)const;
+  std::vector<uint8_t> extractRow(size_t y) const;
 
   //################################################################################################
-  std::vector<uint8_t> extractColumn(size_t x)const;
+  std::vector<uint8_t> extractColumn(size_t x) const;
 
   //################################################################################################
   void setRow(size_t y, const std::vector<uint8_t>& values);

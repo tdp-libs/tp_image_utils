@@ -40,7 +40,7 @@ void ByteMap::fill(uint8_t value)
 }
 
 //##################################################################################################
-const uint8_t* ByteMap::constData()const
+const uint8_t* ByteMap::constData() const
 {
   return m_data.data();
 }
@@ -52,19 +52,19 @@ uint8_t* ByteMap::data()
 }
 
 //##################################################################################################
-size_t ByteMap::width()const
+size_t ByteMap::width() const
 {
   return m_width;
 }
 
 //##################################################################################################
-size_t ByteMap::height()const
+size_t ByteMap::height() const
 {
   return m_height;
 }
 
 //##################################################################################################
-size_t ByteMap::size()const
+size_t ByteMap::size() const
 {
   return m_data.size();
 }
@@ -77,13 +77,13 @@ void ByteMap::setPixel(size_t x, size_t y, uint8_t value)
 }
 
 //##################################################################################################
-uint8_t ByteMap::pixel(size_t x, size_t y)const
+uint8_t ByteMap::pixel(size_t x, size_t y) const
 {
   return (x<m_width && y<m_height)?(*(m_data.data()+((y*m_width)+x))):0;
 }
 
 //##################################################################################################
-ColorMap ByteMap::toImage()const
+ColorMap ByteMap::toImage() const
 {
   ColorMap dst(m_width, m_height);
 
@@ -108,7 +108,7 @@ ColorMap ByteMap::toImage()const
 }
 
 //##################################################################################################
-ByteMap ByteMap::subImage(size_t left, size_t top, size_t right, size_t bottom)const
+ByteMap ByteMap::subImage(size_t left, size_t top, size_t right, size_t bottom) const
 {
   left   = tpBound(size_t(0), left,   m_width -1);
   top    = tpBound(size_t(0), top,    m_height-1);
@@ -128,7 +128,7 @@ ByteMap ByteMap::subImage(size_t left, size_t top, size_t right, size_t bottom)c
 }
 
 //##################################################################################################
-ByteMap ByteMap::rotate90CW()const
+ByteMap ByteMap::rotate90CW() const
 {
   ByteMap dst(m_height, m_width);
 
@@ -142,7 +142,7 @@ ByteMap ByteMap::rotate90CW()const
 }
 
 //##################################################################################################
-ByteMap ByteMap::rotate90CCW()const
+ByteMap ByteMap::rotate90CCW() const
 {
   ByteMap dst(m_height, m_width);
 
@@ -156,7 +156,7 @@ ByteMap ByteMap::rotate90CCW()const
 }
 
 //##################################################################################################
-std::vector<uint8_t> ByteMap::extractRow(size_t y)const
+std::vector<uint8_t> ByteMap::extractRow(size_t y) const
 {
   std::vector<uint8_t> result;
   if(m_width>0 && m_height>0 && y<m_height)
@@ -170,7 +170,7 @@ std::vector<uint8_t> ByteMap::extractRow(size_t y)const
 }
 
 //##################################################################################################
-std::vector<uint8_t> ByteMap::extractColumn(size_t x)const
+std::vector<uint8_t> ByteMap::extractColumn(size_t x) const
 {
   std::vector<uint8_t> result;
   if(m_width>0 && m_height>0 && x<m_width)

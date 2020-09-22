@@ -62,7 +62,7 @@ struct Point
 
   //################################################################################################
   //! Find the length of this vector
-  float length()const;
+  float length() const;
 
   //################################################################################################
   //! Turns this point into a unit vector
@@ -80,7 +80,7 @@ struct Point
   static float dot(const Point& p1, const Point& p2);
 
   //################################################################################################
-  bool positionEquals(const Point& other)const;
+  bool positionEquals(const Point& other) const;
 };
 
 //##################################################################################################

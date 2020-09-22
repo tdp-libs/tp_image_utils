@@ -15,6 +15,11 @@ struct ColorMap::Private
   size_t width{0};
   size_t height{0};
 
+  //Used for textures that have been padded to make them a power of 2.
+  //These will be a value between 0.5f and 1.0f.
+  float fw{1.0f};
+  float fh{1.0f};
+
   std::atomic_int refCount{1};
 
   //################################################################################################
@@ -27,6 +32,8 @@ struct ColorMap::Private
     newSD->data = data;
     newSD->width = width;
     newSD->height = height;
+    newSD->fw = fw;
+    newSD->fh = fh;
 
     if(refCount.fetch_sub(1)==1)
       delete this;
@@ -43,12 +50,12 @@ ColorMap::ColorMap(const ColorMap& other):
 }
 
 //##################################################################################################
-ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data):
+ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data, TPPixel fill):
   sd(new Private())
 {  
   sd->width = w;
   sd->height = h;
-  sd->data.resize(w*h, TPPixel());
+  sd->data.resize(w*h, fill);
 
   if(data)
     memcpy(sd->data.data(), data, sd->data.size()*sizeof(TPPixel));
@@ -295,6 +302,83 @@ void ColorMap::setSize(size_t width, size_t height)
   sd->width  = width;
   sd->height = height;
   sd->data.resize(width*height);
+}
+
+//##################################################################################################
+ColorMap ColorMap::clone2() const
+{
+  ColorMap clone;
+  clone2IntoOther(clone);
+  return clone;
+}
+
+//##################################################################################################
+void ColorMap::clone2IntoOther(ColorMap& clone) const
+{
+  auto po2 = [](size_t v)
+  {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+  };
+
+  if(sd->width<1||sd->height<1)
+  {
+    clone = ColorMap();
+    return;
+  }
+
+  size_t newSize = po2(tpMax(sd->width, sd->height));
+
+  if(sd->width == newSize && sd->height == newSize)
+  {
+    clone = *this;
+    return;
+  }
+
+  clone = ColorMap(newSize, newSize);
+
+  clone.sd->fw = (float(sd->width )*sd->fw) / float(clone.sd->width );
+  clone.sd->fh = (float(sd->height)*sd->fh) / float(clone.sd->height);
+
+  size_t srcW = sd->width*sizeof(TPPixel);
+  for(size_t y=0; y<sd->height; y++)
+  {
+    TPPixel* dst = const_cast<TPPixel*>(clone.sd->data.data())+(y*clone.sd->width);
+    memcpy(dst, sd->data.data()+(y*sd->width), srcW);
+
+    {
+      TPPixel* d=dst+sd->width;
+      TPPixel  p = *(d-1);
+      TPPixel* dMax=dst+clone.sd->width;
+      for(; d<dMax; d++)
+        (*d) = p;
+    }
+  }
+
+  {
+    size_t dstW = clone.sd->width*sizeof(TPPixel);
+    const void* src = clone.sd->data.data()+(clone.sd->width*(sd->height-1));
+    for(size_t y=sd->height; y<clone.sd->height; y++)
+      memcpy(const_cast<TPPixel*>(clone.sd->data.data())+(clone.sd->width*y), src, dstW);
+  }
+}
+
+//##################################################################################################
+float ColorMap::fw() const
+{
+  return sd->fw;
+}
+
+//##################################################################################################
+float ColorMap::fh() const
+{
+  return sd->fh;
 }
 
 

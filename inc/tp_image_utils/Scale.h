@@ -140,8 +140,8 @@ struct ScaleDetails
   uint8_t fillValue{0};
   TPPixel   fillPixel;
 
-  void fill(uint8_t& v)const{v = fillValue;}
-  void fill(TPPixel& v)const{v = fillPixel;}
+  void fill(uint8_t& v) const{v = fillValue;}
+  void fill(TPPixel& v) const{v = fillPixel;}
 };
 
 //##################################################################################################
