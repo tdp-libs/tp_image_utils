@@ -83,6 +83,17 @@ ColorMap& ColorMap::operator=(const ColorMap& other)
   return *this;
 }
 
+//################################################################################################
+ColorMap& ColorMap::operator=(ColorMap&& other)
+{
+  if(sd == other.sd)
+    return *this;
+
+  std::swap(sd, other.sd);
+
+  return *this;
+}
+
 //##################################################################################################
 void ColorMap::fill(TPPixel value)
 {
