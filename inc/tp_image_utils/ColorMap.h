@@ -2,6 +2,7 @@
 #define tp_image_utils_ColorMap_h
 
 #include "tp_utils/TPPixel.h"
+#include "tp_utils/RefCount.h"
 
 #include <vector>
 #include <stdint.h>
@@ -12,6 +13,7 @@ namespace tp_image_utils
 //##################################################################################################
 class ColorMap
 {
+  TP_REF_COUNT_OBJECTS("ColorMap");
 public:
   //################################################################################################
   ColorMap(const ColorMap& other);
