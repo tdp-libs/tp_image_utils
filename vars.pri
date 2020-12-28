@@ -12,6 +12,9 @@ HEADERS += inc/tp_image_utils/ByteMap.h
 SOURCES += src/ColorMap.cpp
 HEADERS += inc/tp_image_utils/ColorMap.h
 
+SOURCES += src/ColorMapF.cpp
+HEADERS += inc/tp_image_utils/ColorMapF.h
+
 SOURCES += src/Point.cpp
 HEADERS += inc/tp_image_utils/Point.h
 

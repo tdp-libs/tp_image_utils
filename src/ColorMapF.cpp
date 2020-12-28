@@ -1,4 +1,4 @@
-#include "tp_image_utils/ColorMap.h"
+#include "tp_image_utils/ColorMapF.h"
 
 #include <vector>
 #include <sstream>
@@ -9,9 +9,9 @@ namespace tp_image_utils
 {
 
 //##################################################################################################
-struct ColorMap::Private
+struct ColorMapF::Private
 {
-  std::vector<TPPixel> data;
+  std::vector<glm::vec4> data;
   size_t width{0};
   size_t height{0};
 
@@ -23,7 +23,7 @@ struct ColorMap::Private
   std::atomic_int refCount{1};
 
   //################################################################################################
-  void detach(ColorMap* q)
+  void detach(ColorMapF* q)
   {
     if(refCount==1)
       return;
@@ -43,14 +43,14 @@ struct ColorMap::Private
 };
 
 //##################################################################################################
-ColorMap::ColorMap(const ColorMap& other):
+ColorMapF::ColorMapF(const ColorMapF& other):
   sd(other.sd)
 {
   sd->refCount++;
 }
 
 //##################################################################################################
-ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data, TPPixel fill):
+ColorMapF::ColorMapF(size_t w, size_t h, const glm::vec4* data, const glm::vec4& fill):
   sd(new Private())
 {  
   sd->width = w;
@@ -58,18 +58,18 @@ ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data, TPPixel fill):
   sd->data.resize(w*h, fill);
 
   if(data)
-    memcpy(sd->data.data(), data, sd->data.size()*sizeof(TPPixel));
+    memcpy(sd->data.data(), data, sd->data.size()*sizeof(glm::vec4));
 }
 
 //##################################################################################################
-ColorMap::~ColorMap()
+ColorMapF::~ColorMapF()
 {
   if(sd->refCount.fetch_sub(1)==1)
     delete sd;
 }
 
 //##################################################################################################
-ColorMap& ColorMap::operator=(const ColorMap& other)
+ColorMapF& ColorMapF::operator=(const ColorMapF& other)
 {
   if(sd == other.sd)
     return *this;
@@ -84,7 +84,7 @@ ColorMap& ColorMap::operator=(const ColorMap& other)
 }
 
 //################################################################################################
-ColorMap& ColorMap::operator=(ColorMap&& other)
+ColorMapF& ColorMapF::operator=(ColorMapF&& other)
 {
   if(sd == other.sd)
     return *this;
@@ -95,51 +95,51 @@ ColorMap& ColorMap::operator=(ColorMap&& other)
 }
 
 //##################################################################################################
-void ColorMap::fill(TPPixel value)
+void ColorMapF::fill(const glm::vec4& value)
 {
   sd->detach(this);
   std::fill(sd->data.begin(), sd->data.end(), value);
 }
 
 //##################################################################################################
-const TPPixel* ColorMap::constData() const
+const glm::vec4* ColorMapF::constData() const
 {
   return sd->data.data();
 }
 
 //##################################################################################################
-TPPixel* ColorMap::data()
+glm::vec4* ColorMapF::data()
 {
   sd->detach(this);
   return sd->data.data();
 }
 
 //##################################################################################################
-const std::vector<TPPixel>& ColorMap::constDataVector() const
+const std::vector<glm::vec4>& ColorMapF::constDataVector() const
 {
   return sd->data;
 }
 
 //##################################################################################################
-size_t ColorMap::width() const
+size_t ColorMapF::width() const
 {
   return sd->width;
 }
 
 //##################################################################################################
-size_t ColorMap::height() const
+size_t ColorMapF::height() const
 {
   return sd->height;
 }
 
 //##################################################################################################
-size_t ColorMap::size() const
+size_t ColorMapF::size() const
 {
   return sd->data.size();
 }
 
 //##################################################################################################
-void ColorMap::setPixel(size_t x, size_t y, TPPixel value)
+void ColorMapF::setPixel(size_t x, size_t y, const glm::vec4& value)
 {
   sd->detach(this);
   if(x<sd->width && y<sd->height)
@@ -147,20 +147,20 @@ void ColorMap::setPixel(size_t x, size_t y, TPPixel value)
 }
 
 //##################################################################################################
-TPPixel ColorMap::pixel(size_t x, size_t y) const
+glm::vec4 ColorMapF::pixel(size_t x, size_t y) const
 {
-  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):TPPixel();
+  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):glm::vec4();
 }
 
 //##################################################################################################
-TPPixel& ColorMap::pixelRef(size_t x, size_t y)
+glm::vec4& ColorMapF::pixelRef(size_t x, size_t y)
 {
   sd->detach(this);
   return sd->data.at((y*sd->width) + x);
 }
 
 //##################################################################################################
-ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom) const
+ColorMapF ColorMapF::subImage(size_t left, size_t top, size_t right, size_t bottom) const
 {
   left   = tpBound(size_t(0), left,   sd->width -1);
   top    = tpBound(size_t(0), top,    sd->height-1);
@@ -170,7 +170,7 @@ ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom
   size_t width  = tpMax(size_t(1), right - left);
   size_t height = tpMax(size_t(1), bottom - top);
 
-  ColorMap dst(width, height);
+  ColorMapF dst(width, height);
 
   for(size_t y=0; y<height; y++)
     for(size_t x=0; x<width; x++)
@@ -180,9 +180,9 @@ ColorMap ColorMap::subImage(size_t left, size_t top, size_t right, size_t bottom
 }
 
 //##################################################################################################
-ColorMap ColorMap::rotate90CW() const
+ColorMapF ColorMapF::rotate90CW() const
 {
-  ColorMap dst(sd->height, sd->width);
+  ColorMapF dst(sd->height, sd->width);
 
   size_t sh = sd->height-1;
 
@@ -194,9 +194,9 @@ ColorMap ColorMap::rotate90CW() const
 }
 
 //##################################################################################################
-ColorMap ColorMap::rotate90CCW() const
+ColorMapF ColorMapF::rotate90CCW() const
 {
-  ColorMap dst(sd->height, sd->width);
+  ColorMapF dst(sd->height, sd->width);
 
   size_t sw = sd->width-1;
 
@@ -208,9 +208,9 @@ ColorMap ColorMap::rotate90CCW() const
 }
 
 //##################################################################################################
-ColorMap ColorMap::flipped() const
+ColorMapF ColorMapF::flipped() const
 {
-  ColorMap dst(sd->width, sd->height);
+  ColorMapF dst(sd->width, sd->height);
 
   size_t sh = sd->height-1;
 
@@ -222,29 +222,29 @@ ColorMap ColorMap::flipped() const
 }
 
 //##################################################################################################
-std::vector<TPPixel> ColorMap::extractRow(size_t y) const
+std::vector<glm::vec4> ColorMapF::extractRow(size_t y) const
 {
-  std::vector<TPPixel> result;
+  std::vector<glm::vec4> result;
   if(sd->width>0 && sd->height>0 && y<sd->height)
   {
     result.resize(sd->width);
-    const TPPixel* s = sd->data.data()+(y*sd->width);
-    TPPixel* d = result.data();
+    const glm::vec4* s = sd->data.data()+(y*sd->width);
+    glm::vec4* d = result.data();
     std::memcpy(d, s, sd->width);
   }
   return result;
 }
 
 //##################################################################################################
-std::vector<TPPixel> ColorMap::extractColumn(size_t x) const
+std::vector<glm::vec4> ColorMapF::extractColumn(size_t x) const
 {
-  std::vector<TPPixel> result;
+  std::vector<glm::vec4> result;
   if(sd->width>0 && sd->height>0 && x<sd->width)
   {
     result.resize(sd->height);
-    const TPPixel* s = sd->data.data()+x;
-    TPPixel* d = result.data();
-    TPPixel* dMax = d + sd->height;
+    const glm::vec4* s = sd->data.data()+x;
+    glm::vec4* d = result.data();
+    glm::vec4* dMax = d + sd->height;
 
     for(; d<dMax; d++, s+=sd->width)
       *d = *s;
@@ -253,26 +253,26 @@ std::vector<TPPixel> ColorMap::extractColumn(size_t x) const
 }
 
 //##################################################################################################
-void ColorMap::setRow(size_t y, const std::vector<TPPixel>& values)
+void ColorMapF::setRow(size_t y, const std::vector<glm::vec4>& values)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && y<sd->height && values.size() == sd->width)
   {
-    const TPPixel* s = values.data();
-    TPPixel* d = sd->data.data()+(y*sd->width);
+    const glm::vec4* s = values.data();
+    glm::vec4* d = sd->data.data()+(y*sd->width);
     std::memcpy(d, s, sd->width);
   }
 }
 
 //##################################################################################################
-void ColorMap::setColumn(size_t x, const std::vector<TPPixel>& values)
+void ColorMapF::setColumn(size_t x, const std::vector<glm::vec4>& values)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && x<sd->width && values.size() == sd->height)
   {
-    TPPixel* d = sd->data.data()+x;
-    const TPPixel* s = values.data();
-    const TPPixel* sMax = s + sd->height;
+    glm::vec4* d = sd->data.data()+x;
+    const glm::vec4* s = values.data();
+    const glm::vec4* sMax = s + sd->height;
 
     for(; s<sMax; s++, d+=sd->width)
       *d = *s;
@@ -280,26 +280,26 @@ void ColorMap::setColumn(size_t x, const std::vector<TPPixel>& values)
 }
 
 //##################################################################################################
-void ColorMap::setRow(size_t y, TPPixel value)
+void ColorMapF::setRow(size_t y, glm::vec4 value)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && y<sd->height)
   {
-    TPPixel* d = sd->data.data()+(y*sd->width);
-    TPPixel* dMax = d+sd->width;
+    glm::vec4* d = sd->data.data()+(y*sd->width);
+    glm::vec4* dMax = d+sd->width;
     for(; d<dMax; d++)
       (*d) = value;
   }
 }
 
 //##################################################################################################
-void ColorMap::setColumn(size_t x, TPPixel value)
+void ColorMapF::setColumn(size_t x, glm::vec4 value)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && x<sd->width)
   {
-    TPPixel* d = sd->data.data()+x;
-    TPPixel* dMax = sd->data.data()+sd->data.size();
+    glm::vec4* d = sd->data.data()+x;
+    glm::vec4* dMax = sd->data.data()+sd->data.size();
 
     for(; d<dMax; d+=sd->width)
       (*d) = value;
@@ -307,7 +307,7 @@ void ColorMap::setColumn(size_t x, TPPixel value)
 }
 
 //##################################################################################################
-void ColorMap::setSize(size_t width, size_t height)
+void ColorMapF::setSize(size_t width, size_t height)
 {
   sd->detach(this);
   sd->width  = width;
@@ -316,15 +316,15 @@ void ColorMap::setSize(size_t width, size_t height)
 }
 
 //##################################################################################################
-ColorMap ColorMap::clone2() const
+ColorMapF ColorMapF::clone2() const
 {
-  ColorMap clone;
+  ColorMapF clone;
   clone2IntoOther(clone);
   return clone;
 }
 
 //##################################################################################################
-void ColorMap::clone2IntoOther(ColorMap& clone) const
+void ColorMapF::clone2IntoOther(ColorMapF& clone) const
 {
   auto po2 = [](size_t v)
   {
@@ -340,7 +340,7 @@ void ColorMap::clone2IntoOther(ColorMap& clone) const
 
   if(sd->width<1||sd->height<1)
   {
-    clone = ColorMap();
+    clone = ColorMapF();
     return;
   }
 
@@ -352,49 +352,49 @@ void ColorMap::clone2IntoOther(ColorMap& clone) const
     return;
   }
 
-  clone = ColorMap(newSize, newSize);
+  clone = ColorMapF(newSize, newSize);
 
   clone.sd->fw = (float(sd->width )*sd->fw) / float(clone.sd->width );
   clone.sd->fh = (float(sd->height)*sd->fh) / float(clone.sd->height);
 
-  size_t srcW = sd->width*sizeof(TPPixel);
+  size_t srcW = sd->width*sizeof(glm::vec4);
   for(size_t y=0; y<sd->height; y++)
   {
-    TPPixel* dst = const_cast<TPPixel*>(clone.sd->data.data())+(y*clone.sd->width);
+    glm::vec4* dst = const_cast<glm::vec4*>(clone.sd->data.data())+(y*clone.sd->width);
     memcpy(dst, sd->data.data()+(y*sd->width), srcW);
 
     {
-      TPPixel* d=dst+sd->width;
-      TPPixel  p = *(d-1);
-      TPPixel* dMax=dst+clone.sd->width;
+      glm::vec4* d=dst+sd->width;
+      glm::vec4  p = *(d-1);
+      glm::vec4* dMax=dst+clone.sd->width;
       for(; d<dMax; d++)
         (*d) = p;
     }
   }
 
   {
-    size_t dstW = clone.sd->width*sizeof(TPPixel);
+    size_t dstW = clone.sd->width*sizeof(glm::vec4);
     const void* src = clone.sd->data.data()+(clone.sd->width*(sd->height-1));
     for(size_t y=sd->height; y<clone.sd->height; y++)
-      memcpy(const_cast<TPPixel*>(clone.sd->data.data())+(clone.sd->width*y), src, dstW);
+      memcpy(const_cast<glm::vec4*>(clone.sd->data.data())+(clone.sd->width*y), src, dstW);
   }
 }
 
 //##################################################################################################
-void ColorMap::setFractionalSize(float fw, float fh)
+void ColorMapF::setFractionalSize(float fw, float fh)
 {
   sd->fw = fw;
   sd->fh = fh;
 }
 
 //##################################################################################################
-float ColorMap::fw() const
+float ColorMapF::fw() const
 {
   return sd->fw;
 }
 
 //##################################################################################################
-float ColorMap::fh() const
+float ColorMapF::fh() const
 {
   return sd->fh;
 }

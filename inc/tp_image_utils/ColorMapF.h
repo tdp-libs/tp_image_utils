@@ -1,8 +1,9 @@
-#ifndef tp_image_utils_ColorMap_h
-#define tp_image_utils_ColorMap_h
+#ifndef tp_image_utils_ColorMapF_h
+#define tp_image_utils_ColorMapF_h
 
-#include "tp_utils/TPPixel.h"
 #include "tp_utils/RefCount.h"
+
+#include "glm/glm.hpp"
 
 #include <vector>
 #include <stdint.h>
@@ -11,36 +12,36 @@ namespace tp_image_utils
 {
 
 //##################################################################################################
-class ColorMap
+class ColorMapF
 {
-  TP_REF_COUNT_OBJECTS("ColorMap");
+  TP_REF_COUNT_OBJECTS("ColorMapF");
 public:
   //################################################################################################
-  ColorMap(const ColorMap& other);
+  ColorMapF(const ColorMapF& other);
 
   //################################################################################################
-  ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr, TPPixel fill=TPPixel());
+  ColorMapF(size_t w=0, size_t h=0, const glm::vec4* data=nullptr, const glm::vec4& fill=glm::vec4(0,0,0,1));
 
   //################################################################################################
-  ~ColorMap();
+  ~ColorMapF();
 
   //################################################################################################
-  ColorMap& operator=(const ColorMap& other);
+  ColorMapF& operator=(const ColorMapF& other);
 
   //################################################################################################
-  ColorMap& operator=(ColorMap&& other);
+  ColorMapF& operator=(ColorMapF&& other);
 
   //################################################################################################
-  void fill(TPPixel value);
+  void fill(const glm::vec4& value);
 
   //################################################################################################
-  const TPPixel* constData() const;
+  const glm::vec4* constData() const;
 
   //################################################################################################
-  TPPixel* data();
+  glm::vec4* data();
 
   //################################################################################################
-  const std::vector<TPPixel>& constDataVector() const;
+  const std::vector<glm::vec4>& constDataVector() const;
 
   //################################################################################################
   size_t width() const;
@@ -53,45 +54,45 @@ public:
   size_t size() const;
 
   //################################################################################################
-  void setPixel(size_t x, size_t y, TPPixel value);
+  void setPixel(size_t x, size_t y, const glm::vec4& value);
 
   //################################################################################################
-  TPPixel pixel(size_t x, size_t y) const;
+  glm::vec4 pixel(size_t x, size_t y) const;
 
   //################################################################################################
-  TPPixel& pixelRef(size_t x, size_t y);
+  glm::vec4& pixelRef(size_t x, size_t y);
 
   //################################################################################################
-  ColorMap subImage(size_t left, size_t top, size_t right, size_t bottom) const;
+  ColorMapF subImage(size_t left, size_t top, size_t right, size_t bottom) const;
 
   //################################################################################################
   //! Rotate the image 90 degrees clockwise
-  ColorMap rotate90CW() const;
+  ColorMapF rotate90CW() const;
 
   //################################################################################################
   //! Rotate the image 90 degrees counter clockwise
-  ColorMap rotate90CCW() const;
+  ColorMapF rotate90CCW() const;
 
   //################################################################################################
-  ColorMap flipped() const;
+  ColorMapF flipped() const;
 
   //################################################################################################
-  std::vector<TPPixel> extractRow(size_t y) const;
+  std::vector<glm::vec4> extractRow(size_t y) const;
 
   //################################################################################################
-  std::vector<TPPixel> extractColumn(size_t x) const;
+  std::vector<glm::vec4> extractColumn(size_t x) const;
 
   //################################################################################################
-  void setRow(size_t y, const std::vector<TPPixel>& values);
+  void setRow(size_t y, const std::vector<glm::vec4>& values);
 
   //################################################################################################
-  void setColumn(size_t x, const std::vector<TPPixel>& values);
+  void setColumn(size_t x, const std::vector<glm::vec4>& values);
 
   //################################################################################################
-  void setRow(size_t y, TPPixel value);
+  void setRow(size_t y, glm::vec4 value);
 
   //################################################################################################
-  void setColumn(size_t x, TPPixel value);
+  void setColumn(size_t x, glm::vec4 value);
 
   //################################################################################################
   //! Simply sets the sise of the image, does NOT scale the contents
@@ -99,11 +100,11 @@ public:
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2
-  ColorMap clone2() const;
+  ColorMapF clone2() const;
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2 into an existing texture
-  void clone2IntoOther(ColorMap& clone) const;
+  void clone2IntoOther(ColorMapF& clone) const;
 
   //################################################################################################
   void setFractionalSize(float fw, float fh);
