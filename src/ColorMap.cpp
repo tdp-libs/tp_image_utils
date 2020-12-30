@@ -147,9 +147,9 @@ void ColorMap::setPixel(size_t x, size_t y, TPPixel value)
 }
 
 //##################################################################################################
-TPPixel ColorMap::pixel(size_t x, size_t y) const
+TPPixel ColorMap::pixel(size_t x, size_t y, TPPixel defaultValue) const
 {
-  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):TPPixel();
+  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):defaultValue;
 }
 
 //##################################################################################################

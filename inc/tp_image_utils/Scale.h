@@ -5,6 +5,8 @@
 #include "tp_image_utils/ByteMap.h"
 #include "tp_image_utils/ColorMap.h"
 
+#include "tp_utils/TimeUtils.h"
+
 #include <functional>
 #include <cmath>
 
@@ -22,56 +24,29 @@ T overlap(T min1, T max1, T min2, T max2)
 }
 
 //##################################################################################################
-struct ByteMapBase
+struct ByteMapDefault
 {
-  virtual ~ByteMapBase();
-
-  virtual std::string name()=0;
-  virtual uint8_t operator()(std::function<uint8_t(int x, int y)> getPixel,
-                             double x1,
-                             double y1,
-                             double x2,
-                             double y2) = 0;
-};
-
-//##################################################################################################
-struct ColorMapBase
-{
-  virtual ~ColorMapBase();
-
-  virtual std::string name()=0;
-  virtual TPPixel operator()(std::function<TPPixel(int x, int y)> getPixel,
-                             double x1,
-                             double y1,
-                             double x2,
-                             double y2) = 0;
-};
-
-//##################################################################################################
-struct ByteMapDefault : public ByteMapBase
-{
-  std::string name() override;
-
-  uint8_t operator()(std::function<uint8_t(int x, int y)> getPixel,
-                     double x1,
-                     double y1,
-                     double x2,
-                     double y2) override
+  template<typename GetPixel>
+  uint8_t operator()(GetPixel getPixel,
+                     float x1,
+                     float y1,
+                     float x2,
+                     float y2)
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
     int px2 = int(std::ceil(x2));
     int py2 = int(std::ceil(y2));
 
-    double a=0.0;
+    float a=0.0;
 
     for(int y=py1; y<py2; y++)
     {
-      double oy = overlap(y1, y2, double(y), double(y)+1.0);
+      float oy = overlap(y1, y2, float(y), float(y)+1.0f);
       for(int x=px1; x<px2; x++)
       {
-        double ox = overlap(x1, x2, double(x), double(x)+1.0);
-        a += (ox*oy) * double(getPixel(x, y));
+        float ox = overlap(x1, x2, float(x), float(x)+1.0f);
+        a += (ox*oy) * float(getPixel(x, y));
       }
     }
 
@@ -80,42 +55,41 @@ struct ByteMapDefault : public ByteMapBase
 };
 
 //##################################################################################################
-struct ColorMapDefault : public ColorMapBase
+struct ColorMapDefault
 {
-  std::string name() override;
-
-  TPPixel operator()(std::function<TPPixel(int x, int y)> getPixel,
-                     double x1,
-                     double y1,
-                     double x2,
-                     double y2)override
+  template<typename GetPixel>
+  TPPixel operator()(GetPixel getPixel,
+                     float x1,
+                     float y1,
+                     float x2,
+                     float y2)
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
     int px2 = int(std::ceil(x2));
     int py2 = int(std::ceil(y2));
 
-    double r=0.0;
-    double g=0.0;
-    double b=0.0;
-    double a=0.0;
+    float r=0.0;
+    float g=0.0;
+    float b=0.0;
+    float a=0.0;
 
     for(int y=py1; y<py2; y++)
     {
-      double oy = overlap(y1, y2, double(y), double(y)+1.0);
+      float oy = overlap(y1, y2, float(y), float(y)+1.0f);
       for(int x=px1; x<px2; x++)
       {
-        double ox = overlap(x1, x2, double(x), double(x)+1.0);
+        float ox = overlap(x1, x2, float(x), float(x)+1.0f);
         TPPixel p = getPixel(x, y);
-        double area = ox*oy;
-        r +=  area * double(p.r);
-        g +=  area * double(p.g);
-        b +=  area * double(p.b);
-        a +=  area * double(p.a);
+        float area = ox*oy;
+        r +=  area * float(p.r);
+        g +=  area * float(p.g);
+        b +=  area * float(p.b);
+        a +=  area * float(p.a);
       }
     }
 
-    double ta = (x2-x1)*(y2-y1);
+    float ta = (x2-x1)*(y2-y1);
 
     return TPPixel(uint8_t(r/ta), uint8_t(g/ta), uint8_t(b/ta), uint8_t(a/ta));
   }
@@ -145,22 +119,22 @@ struct ScaleDetails
 };
 
 //##################################################################################################
-template<typename Container, typename Value>
+template<typename Container, typename Value, typename CalculatePixel>
 Container scale(const Container& src,
                 size_t width,
                 size_t height,
-                std::function<Value(std::function<Value(size_t x, size_t y)> getPixel,
-                                    double x1,
-                                    double y1,
-                                    double x2,
-                                    double y2)> calculatePixel,
+                CalculatePixel calculatePixel,
                 const ScaleDetails& scaleDetails)
 {
+  tp_utils::ElapsedTimer t;
+  t.start();
+  TP_CLEANUP([&]{t.printTime("scale");});
+
   if(src.width()<1 || src.height()<1 || width<1 || height<1)
     return Container();
 
-  double fx = double(src.width ()) / double(width );
-  double fy = double(src.height()) / double(height);
+  float fx = float(src.width ()) / float(width );
+  float fy = float(src.height()) / float(height);
 
   auto _getPixel = [&src, &scaleDetails](size_t x, size_t y) -> Value
   {
@@ -173,8 +147,8 @@ Container scale(const Container& src,
 
   Container result(width, height);
 
-  double ox = 0.0;
-  double oy = 0.0;
+  float ox = 0.0;
+  float oy = 0.0;
   switch(scaleDetails.mode)
   {
   case ScaleMode::Stretch: //-----------------------------------------------------------------------
@@ -207,23 +181,25 @@ Container scale(const Container& src,
     else
       fx=fy;
 
-    ox = ((double(width)  * fx) - double(src.width ())) / 2.0;
-    oy = ((double(height) * fy) - double(src.height())) / 2.0;
+    ox = ((float(width)  * fx) - float(src.width ())) / 2.0f;
+    oy = ((float(height) * fy) - float(src.height())) / 2.0f;
 
     break;
   }
   }
 
-  double py=0.0;
+  auto dst = result.data();
+
+  float py=0.0;
   for(size_t y=0; y<height; y++)
   {
-    double sy = (double(y+1) * fy)-oy;
+    float sy = (float(y+1) * fy)-oy;
 
-    double px=0.0;
-    for(size_t x=0; x<width; x++)
+    float px=0.0;
+    for(size_t x=0; x<width; x++, dst++)
     {
-      double sx = (double(x+1) * fx)-ox;
-      result.setPixel(x, y, calculatePixel(_getPixel, px, py, sx, sy));
+      float sx = (float(x+1) * fx)-ox;
+      (*dst) = calculatePixel(_getPixel, px, py, sx, sy);
       px=sx;
     }
     py=sy;
@@ -233,16 +209,10 @@ Container scale(const Container& src,
 }
 
 //##################################################################################################
-inline ByteMap scale(const ByteMap& src, size_t width, size_t height)
-{
-  return scale<ByteMap, uint8_t>(src, width, height, scale_func::ByteMapDefault(), ScaleDetails());
-}
+ByteMap scale(const ByteMap& src, size_t width, size_t height);
 
 //##################################################################################################
-inline ColorMap scale(const ColorMap& src, size_t width, size_t height)
-{
-  return scale<ColorMap, TPPixel>(src, width, height, scale_func::ColorMapDefault(), ScaleDetails());
-}
+ColorMap scale(const ColorMap& src, size_t width, size_t height);
 
 //##################################################################################################
 void halfScaleInPlace(ColorMap& img);

@@ -3,22 +3,16 @@
 namespace tp_image_utils
 {
 
-namespace scale_func
-{
-ByteMapBase::~ByteMapBase()=default;
-ColorMapBase::~ColorMapBase()=default;
-
 //##################################################################################################
-std::string ByteMapDefault::name()
+ByteMap scale(const ByteMap& src, size_t width, size_t height)
 {
-  return "Default";
+  return scale<ByteMap, uint8_t>(src, width, height, scale_func::ByteMapDefault(), ScaleDetails());
 }
 
 //##################################################################################################
-std::string ColorMapDefault::name()
+ColorMap scale(const ColorMap& src, size_t width, size_t height)
 {
-  return "Default";
-}
+  return scale<ColorMap, TPPixel>(src, width, height, scale_func::ColorMapDefault(), ScaleDetails());
 }
 
 //##################################################################################################

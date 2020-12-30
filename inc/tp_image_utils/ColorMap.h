@@ -56,7 +56,7 @@ public:
   void setPixel(size_t x, size_t y, TPPixel value);
 
   //################################################################################################
-  TPPixel pixel(size_t x, size_t y) const;
+  TPPixel pixel(size_t x, size_t y, TPPixel defaultValue=TPPixel()) const;
 
   //################################################################################################
   TPPixel& pixelRef(size_t x, size_t y);
