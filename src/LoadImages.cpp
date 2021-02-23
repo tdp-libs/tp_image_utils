@@ -101,13 +101,19 @@ ByteMap loadByteMapFromJson(const nlohmann::json& j)
 //##################################################################################################
 std::vector<std::string> imageTypes()
 {
-  return {"*.jpg","*.png","*.bmp","*.jpeg"};
+  return {"*.jpg","*.png","*.bmp","*.jpeg","*.tif","*.tiff","*.tga"};
 }
 
 //##################################################################################################
 std::unordered_set<std::string> imageTypesSet()
 {
-  return {"*.jpg","*.png","*.bmp","*.jpeg"};
+  return {"*.jpg","*.png","*.bmp","*.jpeg","*.tif","*.tiff","*.tga"};
+}
+
+//##################################################################################################
+std::string imageTypesFilter()
+{
+  return "*.jpg *.png *.bmp *.jpeg *.tif *.tiff *.tga";
 }
 
 //##################################################################################################
