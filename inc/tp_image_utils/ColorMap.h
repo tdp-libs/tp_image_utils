@@ -1,6 +1,8 @@
 #ifndef tp_image_utils_ColorMap_h
 #define tp_image_utils_ColorMap_h
 
+#include "tp_image_utils/Globals.h"
+
 #include "tp_utils/TPPixel.h"
 #include "tp_utils/RefCount.h"
 

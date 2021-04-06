@@ -1,5 +1,7 @@
 #include "tp_image_utils/ColorMapF.h"
 
+#include "tp_math_utils/Globals.h"
+
 #include <vector>
 #include <sstream>
 #include <cstring>
@@ -326,25 +328,13 @@ ColorMapF ColorMapF::clone2() const
 //##################################################################################################
 void ColorMapF::clone2IntoOther(ColorMapF& clone) const
 {
-  auto po2 = [](size_t v)
-  {
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
-  };
-
   if(sd->width<1||sd->height<1)
   {
     clone = ColorMapF();
     return;
   }
 
-  size_t newSize = po2(tpMax(sd->width, sd->height));
+  size_t newSize = tp_math_utils::powerOf2(tpMax(sd->width, sd->height));
 
   if(sd->width == newSize && sd->height == newSize)
   {

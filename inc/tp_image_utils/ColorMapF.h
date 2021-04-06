@@ -1,6 +1,8 @@
 #ifndef tp_image_utils_ColorMapF_h
 #define tp_image_utils_ColorMapF_h
 
+#include "tp_image_utils/Globals.h"
+
 #include "tp_utils/RefCount.h"
 
 #include "glm/glm.hpp"
