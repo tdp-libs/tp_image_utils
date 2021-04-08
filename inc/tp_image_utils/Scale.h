@@ -4,6 +4,7 @@
 #include "tp_image_utils/Globals.h"
 #include "tp_image_utils/ByteMap.h"
 #include "tp_image_utils/ColorMap.h"
+#include "tp_image_utils/ColorMapF.h"
 
 #include "tp_utils/TimeUtils.h"
 
@@ -69,10 +70,10 @@ struct ColorMapDefault
     int px2 = int(std::ceil(x2));
     int py2 = int(std::ceil(y2));
 
-    float r=0.0;
-    float g=0.0;
-    float b=0.0;
-    float a=0.0;
+    float r=0.0f;
+    float g=0.0f;
+    float b=0.0f;
+    float a=0.0f;
 
     for(int y=py1; y<py2; y++)
     {
@@ -95,6 +96,47 @@ struct ColorMapDefault
   }
 };
 
+//##################################################################################################
+struct ColorMapFDefault
+{
+  template<typename GetPixel>
+  glm::vec4 operator()(GetPixel getPixel,
+                       float x1,
+                       float y1,
+                       float x2,
+                       float y2)
+  {
+    int px1 = int(std::floor(x1));
+    int py1 = int(std::floor(y1));
+    int px2 = int(std::ceil(x2));
+    int py2 = int(std::ceil(y2));
+
+    double r=0.0;
+    double g=0.0;
+    double b=0.0;
+    double a=0.0;
+
+    for(int y=py1; y<py2; y++)
+    {
+      double oy = double(overlap(y1, y2, float(y), float(y)+1.0f));
+      for(int x=px1; x<px2; x++)
+      {
+        double ox = double(overlap(x1, x2, float(x), float(x)+1.0f));
+        glm::vec4 p = getPixel(x, y);
+        double area = ox*oy;
+        r +=  area * double(p.x);
+        g +=  area * double(p.y);
+        b +=  area * double(p.z);
+        a +=  area * double(p.w);
+      }
+    }
+
+    double ta = (double(x2)-double(x1))*(double(y2)-double(y1));
+
+    return glm::vec4(float(r/ta), float(g/ta), float(b/ta), float(a/ta));
+  }
+};
+
 }
 
 //##################################################################################################
@@ -113,9 +155,11 @@ struct ScaleDetails
 
   uint8_t fillValue{0};
   TPPixel   fillPixel;
+  glm::vec4 fillColorF{0.0f,0.0f,0.0f,1.0f};
 
   void fill(uint8_t& v) const{v = fillValue;}
   void fill(TPPixel& v) const{v = fillPixel;}
+  void fill(glm::vec4& v) const{v = fillColorF;}
 };
 
 //##################################################################################################
@@ -211,6 +255,9 @@ ByteMap scale(const ByteMap& src, size_t width, size_t height);
 
 //##################################################################################################
 ColorMap scale(const ColorMap& src, size_t width, size_t height);
+
+//##################################################################################################
+ColorMapF scale(const ColorMapF& src, size_t width, size_t height);
 
 //##################################################################################################
 void halfScaleInPlace(ColorMap& img);

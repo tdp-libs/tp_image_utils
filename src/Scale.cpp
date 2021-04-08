@@ -16,6 +16,12 @@ ColorMap scale(const ColorMap& src, size_t width, size_t height)
 }
 
 //##################################################################################################
+ColorMapF scale(const ColorMapF& src, size_t width, size_t height)
+{
+  return scale<ColorMapF, glm::vec4>(src, width, height, scale_func::ColorMapFDefault(), ScaleDetails());
+}
+
+//##################################################################################################
 void halfScaleInPlace(ColorMap& img)
 {
   size_t width  = tpMax(size_t(1), img.width()/2);
