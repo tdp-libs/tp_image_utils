@@ -57,9 +57,9 @@ std::vector<ColorMap> loadImages(const std::string& path, std::vector<std::strin
 //##################################################################################################
 ColorMap loadImageFromJson(const nlohmann::json& j)
 {
-  auto w = tp_utils::getJSONValue<size_t>(j, "w", 0);
-  auto h = tp_utils::getJSONValue<size_t>(j, "h", 0);
-  auto data = tp_utils::getJSONValue<std::string>(j, "data", "");
+  auto w = TPJSONSizeT(j, "w");
+  auto h = TPJSONSizeT(j, "h");
+  auto data = TPJSONString(j, "data");
 
   if(w<1 || h<1)
     return ColorMap();
@@ -79,9 +79,9 @@ ColorMap loadImageFromJson(const nlohmann::json& j)
 //##################################################################################################
 ByteMap loadByteMapFromJson(const nlohmann::json& j)
 {  
-  auto w = tp_utils::getJSONValue<size_t>(j, "w", 0);
-  auto h = tp_utils::getJSONValue<size_t>(j, "h", 0);
-  auto data = tp_utils::getJSONValue<std::string>(j, "data", "");
+  auto w = TPJSONSizeT(j, "w");
+  auto h = TPJSONSizeT(j, "h");
+  auto data = TPJSONString(j, "data");
 
   if(w<1 || h<1)
     return ByteMap();
