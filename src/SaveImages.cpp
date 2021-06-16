@@ -3,6 +3,8 @@
 
 #include "base64.h"
 
+#include <cstring>
+
 namespace tp_image_utils
 {
 void (*saveImage_)(const std::string& path, const ColorMap& image) = nullptr;
@@ -57,6 +59,27 @@ nlohmann::json saveByteMapToJson(const ByteMap& image)
   j["data"] = base64_encode(image.constData(), image.size());
 
   return j;
+}
+
+//##################################################################################################
+std::string saveColorMapFToData(const ColorMapF& image)
+{
+  size_t headerSize = sizeof(uint32_t)*2;               // Width & Height
+  size_t   dataSize = image.size() * 4 * sizeof(float); // Data
+  size_t totalSize  = headerSize + dataSize;
+
+  std::string data;
+  data.resize(totalSize);
+
+  char* dst = data.data();
+
+  uint32_t size[2]{uint32_t(image.width()), uint32_t(image.height())};
+  std::memcpy(dst, size, headerSize);
+  dst+=headerSize;
+
+  std::memcpy(dst, image.constData(), dataSize);
+
+  return data;
 }
 
 }

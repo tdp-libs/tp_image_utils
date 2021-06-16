@@ -3,6 +3,7 @@
 
 #include "tp_image_utils/Globals.h"
 #include "tp_image_utils/ColorMap.h"
+#include "tp_image_utils/ColorMapF.h"
 #include "tp_image_utils/ByteMap.h"
 
 #include "json.hpp"
@@ -23,6 +24,9 @@ nlohmann::json saveImageToJson(const ColorMap& image);
 
 //##################################################################################################
 nlohmann::json saveByteMapToJson(const ByteMap& image);
+
+//##################################################################################################
+std::string saveColorMapFToData(const ColorMapF& image);
 
 extern void (*saveImage_)(const std::string& path, const ColorMap& image);
 extern std::string (*saveImageToData_)(const ColorMap& image);
