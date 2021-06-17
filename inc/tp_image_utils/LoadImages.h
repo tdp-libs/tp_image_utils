@@ -3,6 +3,7 @@
 
 #include "tp_image_utils/Globals.h"
 #include "tp_image_utils/ColorMap.h"
+#include "tp_image_utils/ColorMapF.h"
 #include "tp_image_utils/ByteMap.h"
 
 #include "json.hpp"
@@ -36,6 +37,9 @@ ColorMap loadImageFromJson(const nlohmann::json& j);
 
 //##################################################################################################
 ByteMap loadByteMapFromJson(const nlohmann::json& j);
+
+//##################################################################################################
+ColorMapF loadColorMapFFromData(const std::string& data);
 
 //##################################################################################################
 std::vector<std::string> imageTypes();

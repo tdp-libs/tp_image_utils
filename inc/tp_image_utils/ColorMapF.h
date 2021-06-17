@@ -40,49 +40,49 @@ public:
   const glm::vec4* constData() const;
 
   //################################################################################################
-  glm::vec4* data();
+  [[nodiscard]]glm::vec4* data();
 
   //################################################################################################
-  const std::vector<glm::vec4>& constDataVector() const;
+  [[nodiscard]]const std::vector<glm::vec4>& constDataVector() const;
 
   //################################################################################################
-  size_t width() const;
+  [[nodiscard]]size_t width() const;
 
   //################################################################################################
-  size_t height() const;
+  [[nodiscard]]size_t height() const;
 
   //################################################################################################
   //! Returns the size as a count of pixels
-  size_t size() const;
+  [[nodiscard]]size_t size() const;
 
   //################################################################################################
   void setPixel(size_t x, size_t y, const glm::vec4& value);
 
   //################################################################################################
-  glm::vec4 pixel(size_t x, size_t y) const;
+  [[nodiscard]]glm::vec4 pixel(size_t x, size_t y) const;
 
   //################################################################################################
-  glm::vec4& pixelRef(size_t x, size_t y);
+  [[nodiscard]]glm::vec4& pixelRef(size_t x, size_t y);
 
   //################################################################################################
-  ColorMapF subImage(size_t left, size_t top, size_t right, size_t bottom) const;
+  [[nodiscard]]ColorMapF subImage(size_t left, size_t top, size_t right, size_t bottom) const;
 
   //################################################################################################
   //! Rotate the image 90 degrees clockwise
-  ColorMapF rotate90CW() const;
+  [[nodiscard]]ColorMapF rotate90CW() const;
 
   //################################################################################################
   //! Rotate the image 90 degrees counter clockwise
-  ColorMapF rotate90CCW() const;
+  [[nodiscard]]ColorMapF rotate90CCW() const;
 
   //################################################################################################
-  ColorMapF flipped() const;
+  [[nodiscard]]ColorMapF flipped() const;
 
   //################################################################################################
-  std::vector<glm::vec4> extractRow(size_t y) const;
+  [[nodiscard]]std::vector<glm::vec4> extractRow(size_t y) const;
 
   //################################################################################################
-  std::vector<glm::vec4> extractColumn(size_t x) const;
+  [[nodiscard]]std::vector<glm::vec4> extractColumn(size_t x) const;
 
   //################################################################################################
   void setRow(size_t y, const std::vector<glm::vec4>& values);
@@ -102,7 +102,7 @@ public:
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2
-  ColorMapF clone2() const;
+  [[nodiscard]]ColorMapF clone2() const;
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2 into an existing texture
@@ -116,14 +116,14 @@ public:
   Used for textures that have been padded to make them a power of 2.
   These will be a value between 0.5f and 1.0f.
   */
-  float fw() const;
+  [[nodiscard]]float fw() const;
 
   //################################################################################################
   /*!
   Used for textures that have been padded to make them a power of 2.
   These will be a value between 0.5f and 1.0f.
   */
-  float fh() const;
+  [[nodiscard]]float fh() const;
 
 private:
   struct Private;

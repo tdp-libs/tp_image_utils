@@ -99,6 +99,33 @@ ByteMap loadByteMapFromJson(const nlohmann::json& j)
 }
 
 //##################################################################################################
+ColorMapF loadColorMapFFromData(const std::string& data)
+{
+  ColorMapF result;
+
+  size_t headerSize = sizeof(uint32_t)*2; // Width & Height
+  if(data.size() < headerSize)
+    return result;
+
+  const char* src = data.data();
+
+  uint32_t size[2];
+  std::memcpy(size, src, headerSize);
+  src += headerSize;
+
+  size_t   dataSize = (size[0]*size[1]) * 4 * sizeof(float); // Data
+  size_t totalSize  = headerSize + dataSize;
+
+  if(data.size() != totalSize)
+    return result;
+
+  result.setSize(size[0], size[1]);
+  std::memcpy(result.data(), src, dataSize);
+
+  return result;
+}
+
+//##################################################################################################
 std::vector<std::string> imageTypes()
 {
   return {"*.jpg","*.png","*.bmp","*.jpeg","*.tif","*.tiff","*.tga"};
