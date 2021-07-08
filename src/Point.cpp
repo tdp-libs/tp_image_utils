@@ -130,11 +130,11 @@ std::string serializePoint(const Point& point)
 //##################################################################################################
 Line deserializeLine(const std::string& data)
 {
-  Line result;
-
   std::vector<std::string> lines;
   tpSplit(lines, data, '|', tp_utils::SplitBehavior::SkipEmptyParts);
 
+  Line result;
+  result.reserve(lines.size());
   for(const std::string& line : lines)
   {
     std::vector<std::string> parts;
@@ -165,7 +165,7 @@ std::string serializeLine(const Line& line)
 LineCollection deserializeLineCollection(const nlohmann::json& j)
 {
   LineCollection result;
-
+  result.reserve(j.size());
   for(const nlohmann::json& line : j)
     result.push_back(deserializeLine(line));
 
@@ -186,6 +186,7 @@ std::vector<LineCollection> deserializeLineCollections(const nlohmann::json& j)
 {
   //const std::vector<std::string>& data
   std::vector<LineCollection> result;
+  result.reserve(j.size());
   for(const nlohmann::json& lineCollection : j)
     result.push_back(deserializeLineCollection(lineCollection));
   return result;

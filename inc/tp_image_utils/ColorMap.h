@@ -36,52 +36,52 @@ public:
   void fill(TPPixel value);
 
   //################################################################################################
-  const TPPixel* constData() const;
+  [[nodiscard]] const TPPixel* constData() const;
 
   //################################################################################################
-  TPPixel* data();
+  [[nodiscard]] TPPixel* data();
 
   //################################################################################################
-  const std::vector<TPPixel>& constDataVector() const;
+  [[nodiscard]] const std::vector<TPPixel>& constDataVector() const;
 
   //################################################################################################
-  size_t width() const;
+  [[nodiscard]] size_t width() const;
 
   //################################################################################################
-  size_t height() const;
+  [[nodiscard]] size_t height() const;
 
   //################################################################################################
   //! Returns the size as a count of pixels
-  size_t size() const;
+  [[nodiscard]] size_t size() const;
 
   //################################################################################################
   void setPixel(size_t x, size_t y, TPPixel value);
 
   //################################################################################################
-  TPPixel pixel(size_t x, size_t y, TPPixel defaultValue=TPPixel()) const;
+  [[nodiscard]] TPPixel pixel(size_t x, size_t y, TPPixel defaultValue=TPPixel()) const;
 
   //################################################################################################
-  TPPixel& pixelRef(size_t x, size_t y);
+  [[nodiscard]] TPPixel& pixelRef(size_t x, size_t y);
 
   //################################################################################################
-  ColorMap subImage(size_t left, size_t top, size_t right, size_t bottom) const;
+  [[nodiscard]] ColorMap subImage(size_t left, size_t top, size_t right, size_t bottom) const;
 
   //################################################################################################
   //! Rotate the image 90 degrees clockwise
-  ColorMap rotate90CW() const;
+  [[nodiscard]] ColorMap rotate90CW() const;
 
   //################################################################################################
   //! Rotate the image 90 degrees counter clockwise
-  ColorMap rotate90CCW() const;
+  [[nodiscard]] ColorMap rotate90CCW() const;
 
   //################################################################################################
-  ColorMap flipped() const;
+  [[nodiscard]] ColorMap flipped() const;
 
   //################################################################################################
-  std::vector<TPPixel> extractRow(size_t y) const;
+  [[nodiscard]] std::vector<TPPixel> extractRow(size_t y) const;
 
   //################################################################################################
-  std::vector<TPPixel> extractColumn(size_t x) const;
+  [[nodiscard]] std::vector<TPPixel> extractColumn(size_t x) const;
 
   //################################################################################################
   void setRow(size_t y, const std::vector<TPPixel>& values);
@@ -101,7 +101,7 @@ public:
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2
-  ColorMap clone2() const;
+  [[nodiscard]] ColorMap clone2() const;
 
   //################################################################################################
   //! Clone the texture and pad to a power of 2 into an existing texture
@@ -115,14 +115,14 @@ public:
   Used for textures that have been padded to make them a power of 2.
   These will be a value between 0.5f and 1.0f.
   */
-  float fw() const;
+  [[nodiscard]] float fw() const;
 
   //################################################################################################
   /*!
   Used for textures that have been padded to make them a power of 2.
   These will be a value between 0.5f and 1.0f.
   */
-  float fh() const;
+  [[nodiscard]] float fh() const;
 
 private:
   struct Private;
