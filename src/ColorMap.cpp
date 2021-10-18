@@ -141,6 +141,12 @@ size_t ColorMap::size() const
 }
 
 //##################################################################################################
+size_t ColorMap::sizeInBytes() const
+{
+  return sd->data.size() * sizeof(TPPixel);
+}
+
+//##################################################################################################
 void ColorMap::setPixel(size_t x, size_t y, TPPixel value)
 {
   sd->detach(this);
