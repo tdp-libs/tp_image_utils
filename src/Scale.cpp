@@ -10,9 +10,11 @@ ByteMap scale(const ByteMap& src, size_t width, size_t height)
 }
 
 //##################################################################################################
-ColorMap scale(const ColorMap& src, size_t width, size_t height)
+ColorMap scale(const ColorMap& src, size_t width, size_t height, ScaleMode scaleMode)
 {
-  return scale<ColorMap, TPPixel>(src, width, height, scale_func::ColorMapDefault(), ScaleDetails());
+  ScaleDetails scaleDetails;
+  scaleDetails.mode = scaleMode;
+  return scale<ColorMap, TPPixel>(src, width, height, scale_func::ColorMapDefault(), scaleDetails);
 }
 
 //##################################################################################################

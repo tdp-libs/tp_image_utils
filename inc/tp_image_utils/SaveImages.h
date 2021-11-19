@@ -20,6 +20,12 @@ void saveImage(const std::string& path, const ColorMap& image);
 std::string saveImageToData(const ColorMap& image);
 
 //##################################################################################################
+std::string saveJPEGToData(const ColorMap& image);
+
+//##################################################################################################
+std::string saveJPEGToData(const tp_image_utils::ColorMap& image, int quality);
+
+//##################################################################################################
 nlohmann::json saveImageToJson(const ColorMap& image);
 
 //##################################################################################################
@@ -30,6 +36,7 @@ std::string saveColorMapFToData(const ColorMapF& image);
 
 extern void (*saveImage_)(const std::string& path, const ColorMap& image);
 extern std::string (*saveImageToData_)(const ColorMap& image);
+extern std::string (*saveJPEGToData_)(const tp_image_utils::ColorMap& image, int quality);
 }
 
 #endif

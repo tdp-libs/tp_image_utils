@@ -254,7 +254,7 @@ Container scale(const Container& src,
 ByteMap scale(const ByteMap& src, size_t width, size_t height);
 
 //##################################################################################################
-ColorMap scale(const ColorMap& src, size_t width, size_t height);
+ColorMap scale(const ColorMap& src, size_t width, size_t height, ScaleMode scaleMode=ScaleMode::Stretch);
 
 //##################################################################################################
 ColorMapF scale(const ColorMapF& src, size_t width, size_t height);

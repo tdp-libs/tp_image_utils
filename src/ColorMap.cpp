@@ -395,5 +395,11 @@ float ColorMap::fh() const
   return sd->fh;
 }
 
+//##################################################################################################
+bool ColorMap::sameObject(const ColorMap& other) const
+{
+  return sd == other.sd;
+}
+
 
 }

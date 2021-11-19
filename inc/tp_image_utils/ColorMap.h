@@ -128,6 +128,9 @@ public:
   */
   [[nodiscard]] float fh() const;
 
+  //################################################################################################
+  bool sameObject(const ColorMap& other) const;
+
 private:
   struct Private;
   friend struct Private;

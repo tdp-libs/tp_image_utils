@@ -9,6 +9,7 @@ namespace tp_image_utils
 {
 void (*saveImage_)(const std::string& path, const ColorMap& image) = nullptr;
 std::string (*saveImageToData_)(const ColorMap& image) = nullptr;
+std::string (*saveJPEGToData_)(const tp_image_utils::ColorMap& image, int quality) = nullptr;
 
 //##################################################################################################
 void saveImage(const std::string& path, const ColorMap& image)
@@ -21,6 +22,12 @@ void saveImage(const std::string& path, const ColorMap& image)
 std::string saveImageToData(const ColorMap& image)
 {
   return (saveImageToData_)?saveImageToData_(image):std::string();
+}
+
+//##################################################################################################
+std::string saveJPEGToData(const ColorMap& image, int quality)
+{
+  return (saveJPEGToData_)?saveJPEGToData_(image, quality):std::string();
 }
 
 //##################################################################################################
