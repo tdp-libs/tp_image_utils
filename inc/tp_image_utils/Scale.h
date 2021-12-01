@@ -7,9 +7,18 @@
 #include "tp_image_utils/ColorMapF.h"
 
 #include "tp_utils/TimeUtils.h"
+#include "tp_utils/DebugUtils.h"
 
 #include <functional>
 #include <cmath>
+
+
+#if defined(TP_LINUX) || defined(TP_OSX) || defined(TP_WIN32)
+#define TP_SCALE_IN_THREAD
+#include "tp_utils/MutexUtils.h"
+#include <thread>
+#endif
+
 
 namespace tp_image_utils
 {
@@ -32,7 +41,7 @@ struct ByteMapDefault
                      float x1,
                      float y1,
                      float x2,
-                     float y2)
+                     float y2) const
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
@@ -63,7 +72,7 @@ struct ColorMapDefault
                      float x1,
                      float y1,
                      float x2,
-                     float y2)
+                     float y2) const
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
@@ -104,7 +113,7 @@ struct ColorMapFDefault
                        float x1,
                        float y1,
                        float x2,
-                       float y2)
+                       float y2) const
   {
     int px1 = int(std::floor(x1));
     int py1 = int(std::floor(y1));
@@ -230,13 +239,8 @@ Container scale(const Container& src,
   }
   }
 
-  auto dst = result.data();
-
-  float py=0.0;
-  for(size_t y=0; y<height; y++)
+  auto execRow = [calculatePixel, width, height, fx, ox, &_getPixel](auto dst, float py, float sy)
   {
-    float sy = (float(y+1) * fy)-oy;
-
     float px=0.0;
     for(size_t x=0; x<width; x++, dst++)
     {
@@ -244,8 +248,86 @@ Container scale(const Container& src,
       (*dst) = calculatePixel(_getPixel, px, py, sx, sy);
       px=sx;
     }
+  };
+
+  auto dst = result.data();
+
+  using ArrayType = decltype (dst);
+
+#ifdef TP_SCALE_IN_THREAD
+  struct RowDetails_lt
+  {
+    ArrayType dst;
+    float py;
+    float sy;
+  };
+  std::vector<RowDetails_lt> rows;
+  rows.resize(height);
+
+  auto addRow = [calculatePixel, width, height, fx, ox, &_getPixel, &rows](auto dst, size_t y, float py, float sy)
+  {
+    auto& r = rows.at(y);
+    r.dst = dst;
+    r.py = py;
+    r.sy = sy;
+  };
+
+#else
+
+  auto addRow = [calculatePixel, width, height, fx, ox, &_getPixel](auto dst, size_t y, float py, float sy)
+  {
+    TP_UNUSED(y);
+    execRow(dst, py, sy);
+  };
+
+#endif
+
+  float py=0.0;
+  for(size_t y=0; y<height; y++)
+  {
+    float sy = (float(y+1) * fy)-oy;
+
+    addRow(dst, y, py, sy);
+    dst+=width;
     py=sy;
   }
+
+#ifdef TP_SCALE_IN_THREAD
+  {
+    TPMutex mutex{TPM};
+    size_t next{0};
+
+    size_t nThreads = std::min(size_t(std::thread::hardware_concurrency()), rows.size());
+
+    std::vector<std::thread*> threads;
+    threads.reserve(nThreads);
+    for(size_t n=0; n<nThreads; n++)
+    {
+      threads.push_back(new std::thread([&]
+      {
+        TP_MUTEX_LOCKER(mutex);
+        for(;;)
+        {
+          if(next >= height)
+            return;
+
+          const auto& r = rows.at(next);
+          next++;
+          {
+            TP_MUTEX_UNLOCKER(mutex);
+            execRow(r.dst, r.py, r.sy);
+          }
+        }
+      }));
+    }
+
+    for(auto t : threads)
+    {
+      t->join();
+      delete t;
+    }
+  }
+#endif
 
   return result;
 }
