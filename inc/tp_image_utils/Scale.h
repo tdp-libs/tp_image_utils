@@ -274,7 +274,7 @@ Container scale(const Container& src,
 
 #else
 
-  auto addRow = [calculatePixel, width, height, fx, ox, &_getPixel](auto dst, size_t y, float py, float sy)
+  auto addRow = [calculatePixel, width, height, fx, ox, &_getPixel, &execRow](auto dst, size_t y, float py, float sy)
   {
     TP_UNUSED(y);
     execRow(dst, py, sy);
