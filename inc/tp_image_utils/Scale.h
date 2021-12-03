@@ -239,7 +239,7 @@ Container scale(const Container& src,
   }
   }
 
-  auto execRow = [calculatePixel, width, height, fx, ox, &_getPixel](auto dst, float py, float sy)
+  auto execRow = [calculatePixel, width, fx, ox, &_getPixel](auto dst, float py, float sy)
   {
     float px=0.0;
     for(size_t x=0; x<width; x++, dst++)
@@ -264,7 +264,7 @@ Container scale(const Container& src,
   std::vector<RowDetails_lt> rows;
   rows.resize(height);
 
-  auto addRow = [calculatePixel, width, height, fx, ox, &_getPixel, &rows](auto dst, size_t y, float py, float sy)
+  auto addRow = [&rows](auto dst, size_t y, float py, float sy)
   {
     auto& r = rows.at(y);
     r.dst = dst;
