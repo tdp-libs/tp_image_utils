@@ -10,6 +10,9 @@ void rgbeToRGBA(const ColorMap& rgbe, ColorMapF& rgba)
 {
   size_t w = rgbe.width();
   size_t h = rgbe.height();
+
+  rgba.setSize(w, h);
+
   size_t c=0;
   tp_utils::parallel([&](auto locker)
   {
@@ -42,6 +45,8 @@ void rgbaToRGBE(const ColorMapF& rgba, ColorMap& rgbe)
 {
   size_t w = rgba.width();
   size_t h = rgba.height();
+
+  rgbe.setSize(w, h);
 
   size_t c=0;
   tp_utils::parallel([&](auto locker)
