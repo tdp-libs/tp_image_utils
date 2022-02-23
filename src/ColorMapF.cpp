@@ -314,7 +314,7 @@ void ColorMapF::setSize(size_t width, size_t height)
   sd->detach(this);
   sd->width  = width;
   sd->height = height;
-  sd->data.resize(width*height);
+  sd->data.resize(width*height, glm::vec4(0.0f,0.0f,0.0f,0.0f));
 }
 
 //##################################################################################################
