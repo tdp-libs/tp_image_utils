@@ -84,14 +84,16 @@ struct ColorMapDefault
     float b=0.0f;
     float a=0.0f;
 
+    float ta = 0.0f;
     for(int y=py1; y<py2; y++)
     {
-      float oy = overlap(y1, y2, float(y), float(y)+1.0f);
+      float oy = overlap(y1, y2, float(y), float(y+1));
       for(int x=px1; x<px2; x++)
       {
-        float ox = overlap(x1, x2, float(x), float(x)+1.0f);
+        float ox = overlap(x1, x2, float(x), float(x+1));
         TPPixel p = getPixel(x, y);
         float area = ox*oy;
+        ta+=area;
         r +=  area * float(p.r);
         g +=  area * float(p.g);
         b +=  area * float(p.b);
@@ -99,7 +101,7 @@ struct ColorMapDefault
       }
     }
 
-    float ta = (x2-x1)*(y2-y1);
+    //float ta = (x2-x1)*(y2-y1);
 
     return TPPixel(uint8_t(r/ta), uint8_t(g/ta), uint8_t(b/ta), uint8_t(a/ta));
   }
@@ -163,8 +165,8 @@ struct ScaleDetails
   ScaleMode mode{ScaleMode::Stretch};
 
   uint8_t fillValue{0};
-  TPPixel   fillPixel;
-  glm::vec4 fillColorF{0.0f,0.0f,0.0f,1.0f};
+  TPPixel   fillPixel{0,0,0,0};
+  glm::vec4 fillColorF{0.0f,0.0f,0.0f,0.0f};
 
   void fill(uint8_t& v) const{v = fillValue;}
   void fill(TPPixel& v) const{v = fillPixel;}
@@ -189,10 +191,10 @@ Container scale(const Container& src,
 
   auto _getPixel = [&src, &scaleDetails](size_t x, size_t y) -> Value
   {
-    if(x<src.width() && y<src.height())
-      return src.pixel(x, y);
     Value v;
     scaleDetails.fill(v);
+    if(x<src.width() && y<src.height())
+      return src.pixel(x, y, v);
     return v;
   };
 
@@ -252,9 +254,8 @@ Container scale(const Container& src,
 
   auto dst = result.data();
 
-  using ArrayType = decltype (dst);
-
 #ifdef TP_SCALE_IN_THREAD
+  using ArrayType = decltype (dst);
   struct RowDetails_lt
   {
     ArrayType dst;

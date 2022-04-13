@@ -149,9 +149,9 @@ void ColorMapF::setPixel(size_t x, size_t y, const glm::vec4& value)
 }
 
 //##################################################################################################
-glm::vec4 ColorMapF::pixel(size_t x, size_t y) const
+glm::vec4 ColorMapF::pixel(size_t x, size_t y, const glm::vec4& defaultValue) const
 {
-  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):glm::vec4();
+  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):defaultValue;
 }
 
 //##################################################################################################

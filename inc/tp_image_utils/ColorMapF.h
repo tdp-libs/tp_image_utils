@@ -59,7 +59,7 @@ public:
   void setPixel(size_t x, size_t y, const glm::vec4& value);
 
   //################################################################################################
-  [[nodiscard]]glm::vec4 pixel(size_t x, size_t y) const;
+  [[nodiscard]]glm::vec4 pixel(size_t x, size_t y, const glm::vec4& defaultValue=glm::vec4()) const;
 
   //################################################################################################
   [[nodiscard]]glm::vec4& pixelRef(size_t x, size_t y);

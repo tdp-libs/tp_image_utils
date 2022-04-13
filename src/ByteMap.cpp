@@ -77,9 +77,9 @@ void ByteMap::setPixel(size_t x, size_t y, uint8_t value)
 }
 
 //##################################################################################################
-uint8_t ByteMap::pixel(size_t x, size_t y) const
+uint8_t ByteMap::pixel(size_t x, size_t y, uint8_t defaultValue) const
 {
-  return (x<m_width && y<m_height)?(*(m_data.data()+((y*m_width)+x))):0;
+  return (x<m_width && y<m_height)?(*(m_data.data()+((y*m_width)+x))):defaultValue;
 }
 
 //##################################################################################################

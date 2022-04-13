@@ -42,7 +42,7 @@ public:
   void setPixel(size_t x, size_t y, uint8_t value);
 
   //################################################################################################
-  uint8_t pixel(size_t x, size_t y) const;
+  uint8_t pixel(size_t x, size_t y, uint8_t defaultValue=0) const;
 
   //################################################################################################
   ColorMap toImage() const;
