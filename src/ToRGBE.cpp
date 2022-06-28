@@ -13,6 +13,8 @@ void rgbeToRGBA(const ColorMap& rgbe, ColorMapF& rgba)
 
   rgba.setSize(w, h);
 
+  glm::vec4* rgbaData = rgba.data();
+
   size_t c=0;
   tp_utils::parallel([&](auto locker)
   {
@@ -27,7 +29,7 @@ void rgbeToRGBA(const ColorMap& rgbe, ColorMapF& rgba)
       const TPPixel* i=rgbe.constData() + (y*w);
       const TPPixel* iMax=i+w;
 
-      glm::vec4* o=rgba.data() + (y*w);
+      glm::vec4* o=rgbaData + (y*w);
       for(; i<iMax; i++, o++)
       {
         float d = std::pow(2.0f, float(int(i->a) - 128));
@@ -48,6 +50,8 @@ void rgbaToRGBE(const ColorMapF& rgba, ColorMap& rgbe)
 
   rgbe.setSize(w, h);
 
+  TPPixel* rgbeData = rgbe.data();
+
   size_t c=0;
   tp_utils::parallel([&](auto locker)
   {
@@ -62,7 +66,7 @@ void rgbaToRGBE(const ColorMapF& rgba, ColorMap& rgbe)
       const glm::vec4* i=rgba.constData() + (y*w);
       const glm::vec4* iMax=i+w;
 
-      TPPixel* o=rgbe.data() + (y*w);
+      TPPixel* o=rgbeData + (y*w);
       for(; i<iMax; i++, o++)
       {
         if(float v = std::max(i->x, std::max(i->y, i->z)); v < 1e-32f)
