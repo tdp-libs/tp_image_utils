@@ -176,6 +176,7 @@ LineCollection deserializeLineCollection(const nlohmann::json& j)
 nlohmann::json serializeLineCollection(const LineCollection& lineCollection)
 {
   nlohmann::json j = nlohmann::json::array();
+  j.get_ptr<nlohmann::json::array_t*>()->reserve(lineCollection.size());
   for(const Line& line : lineCollection)
     j.push_back(serializeLine(line));
   return j;
@@ -196,6 +197,7 @@ std::vector<LineCollection> deserializeLineCollections(const nlohmann::json& j)
 nlohmann::json serializeLineCollections(const std::vector<LineCollection>& lineCollections)
 {
   nlohmann::json result = nlohmann::json::array();
+  result.get_ptr<nlohmann::json::array_t*>()->reserve(lineCollections.size());
   for(const LineCollection& lineCollection : lineCollections)
     result.push_back(serializeLineCollection(lineCollection));
   return result;
