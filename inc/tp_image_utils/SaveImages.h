@@ -20,9 +20,6 @@ void saveImage(const std::string& path, const ColorMap& image);
 std::string saveImageToData(const ColorMap& image);
 
 //##################################################################################################
-std::string saveJPEGToData(const ColorMap& image);
-
-//##################################################################################################
 std::string saveJPEGToData(const tp_image_utils::ColorMap& image, int quality);
 
 //##################################################################################################
