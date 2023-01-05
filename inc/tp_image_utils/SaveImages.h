@@ -14,7 +14,7 @@ namespace tp_image_utils
 {
 
 //##################################################################################################
-void saveImage(const std::string& path, const ColorMap& image);
+bool saveImage(const std::string& path, const ColorMap& image);
 
 //##################################################################################################
 std::string saveImageToData(const ColorMap& image);
@@ -31,7 +31,7 @@ nlohmann::json saveByteMapToJson(const ByteMap& image);
 //##################################################################################################
 std::string saveColorMapFToData(const ColorMapF& image);
 
-extern void (*saveImage_)(const std::string& path, const ColorMap& image);
+extern bool (*saveImage_)(const std::string& path, const ColorMap& image);
 extern std::string (*saveImageToData_)(const ColorMap& image);
 extern std::string (*saveJPEGToData_)(const tp_image_utils::ColorMap& image, int quality);
 }
