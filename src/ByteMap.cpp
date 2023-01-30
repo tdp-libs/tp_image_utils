@@ -77,6 +77,12 @@ void ByteMap::setPixel(size_t x, size_t y, uint8_t value)
 }
 
 //##################################################################################################
+uint8_t& ByteMap::pixelRef(size_t x, size_t y)
+{
+  return m_data[(y*m_width)+x];
+}
+
+//##################################################################################################
 uint8_t ByteMap::pixel(size_t x, size_t y, uint8_t defaultValue) const
 {
   return (x<m_width && y<m_height)?(*(m_data.data()+((y*m_width)+x))):defaultValue;
