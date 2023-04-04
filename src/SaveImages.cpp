@@ -10,6 +10,7 @@ namespace tp_image_utils
 bool (*saveImage_)(const std::string& path, const ColorMap& image) = nullptr;
 std::string (*saveImageToData_)(const ColorMap& image) = nullptr;
 std::string (*saveJPEGToData_)(const tp_image_utils::ColorMap& image, int quality) = nullptr;
+std::string (*saveWebPToData_)(const tp_image_utils::ColorMap& image, int quality) = nullptr;
 
 //##################################################################################################
 bool saveImage(const std::string& path, const ColorMap& image)
@@ -30,6 +31,12 @@ std::string saveImageToData(const ColorMap& image)
 std::string saveJPEGToData(const ColorMap& image, int quality)
 {
   return (saveJPEGToData_)?saveJPEGToData_(image, quality):std::string();
+}
+
+//##################################################################################################
+std::string saveWebPToData(const ColorMap& image, int quality)
+{
+  return (saveWebPToData_)?saveWebPToData_(image, quality):std::string();
 }
 
 //##################################################################################################
