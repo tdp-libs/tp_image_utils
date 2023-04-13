@@ -30,6 +30,9 @@ HEADERS += inc/tp_image_utils/LoadImages.h
 SOURCES += src/SaveImages.cpp
 HEADERS += inc/tp_image_utils/SaveImages.h
 
+SOURCES += src/AbstractImageSequence.cpp
+HEADERS += inc/tp_image_utils/AbstractImageSequence.h
+
 
 SOURCES += src/ToGray.cpp
 HEADERS += inc/tp_image_utils/ToGray.h

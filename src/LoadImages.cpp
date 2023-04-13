@@ -1,9 +1,7 @@
 #include "tp_image_utils/LoadImages.h"
 #include "tp_image_utils/Scale.h"
 
-#include "tp_utils/DebugUtils.h"
 #include "tp_utils/JSONUtils.h"
-#include "tp_utils/TimeUtils.h"
 #include "tp_utils/Resources.h"
 
 #include "base64.h"
