@@ -181,7 +181,7 @@ Container scale(const Container& src,
                 CalculatePixel calculatePixel,
                 const ScaleDetails& scaleDetails)
 {
-  TP_TIME_SCOPE("tp_image_utils::scale");
+  TP_FUNCTION_TIME("tp_image_utils::scale");
 
   if(src.width()<1 || src.height()<1 || width<1 || height<1)
     return Container();
