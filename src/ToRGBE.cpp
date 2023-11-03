@@ -15,13 +15,12 @@ void rgbeToRGBA(const ColorMap& rgbe, ColorMapF& rgba)
 
   glm::vec4* rgbaData = rgba.data();
 
-  size_t c=0;
-  tp_utils::parallel([&](auto locker)
+  std::atomic<size_t> c{0};
+  tp_utils::parallel([&](auto /*locker*/)
   {
     for(;;)
     {
-      size_t y;
-      locker([&]{y=c; c++;});
+      size_t const y=c++;
 
       if(y>=h)
         return;
@@ -52,13 +51,12 @@ void rgbaToRGBE(const ColorMapF& rgba, ColorMap& rgbe)
 
   TPPixel* rgbeData = rgbe.data();
 
-  size_t c=0;
-  tp_utils::parallel([&](auto locker)
+  std::atomic<size_t> c{0};
+  tp_utils::parallel([&](auto /*locker*/)
   {
     for(;;)
     {
-      size_t y;
-      locker([&]{y=c; c++;});
+      size_t const y=c++;
 
       if(y>=h)
         return;
