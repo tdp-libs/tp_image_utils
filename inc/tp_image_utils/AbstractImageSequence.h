@@ -1,14 +1,14 @@
 #ifndef tp_image_utils_AbstractImageSequence_h
 #define tp_image_utils_AbstractImageSequence_h
 
-#include "tp_image_utils/Globals.h" // IWYU pragma: keep
-#include "tp_image_utils/ColorMap.h"
+#include "tp_image_utils/Globals.h"
 
 namespace tp_image_utils
 {
+class ColorMap;
 
 //##################################################################################################
-class AbstractImageSequence
+class TP_IMAGE_UTILS_EXPORT AbstractImageSequence
 {
 public:
   //################################################################################################

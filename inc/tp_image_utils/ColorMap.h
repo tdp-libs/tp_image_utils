@@ -7,13 +7,12 @@
 #include "tp_utils/RefCount.h"
 
 #include <vector>
-#include <stdint.h>
 
 namespace tp_image_utils
 {
 
 //##################################################################################################
-class ColorMap
+class TP_IMAGE_UTILS_EXPORT ColorMap
 {
   TP_REF_COUNT_OBJECTS("ColorMap");
 public:
