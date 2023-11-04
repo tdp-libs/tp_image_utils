@@ -3,6 +3,7 @@
 
 #include "tp_image_utils/Globals.h"
 
+
 #include "tp_utils/RefCount.h"
 
 #include "glm/glm.hpp"
@@ -43,7 +44,7 @@ public:
   [[nodiscard]]glm::vec4* data();
 
   //################################################################################################
-  [[nodiscard]]const std::vector<glm::vec4>& constDataVector() const;
+  [[nodiscard]]glm::vec4 const * const constDataVector() const;
 
   //################################################################################################
   [[nodiscard]]size_t width() const;
@@ -59,7 +60,7 @@ public:
   void setPixel(size_t x, size_t y, const glm::vec4& value);
 
   //################################################################################################
-  [[nodiscard]]glm::vec4 pixel(size_t x, size_t y, const glm::vec4& defaultValue=glm::vec4()) const;
+  [[nodiscard]]const glm::vec4 &pixel(size_t x, size_t y, const glm::vec4& defaultValue=glm::vec4()) const;
 
   //################################################################################################
   [[nodiscard]]glm::vec4& pixelRef(size_t x, size_t y);
@@ -91,10 +92,10 @@ public:
   void setColumn(size_t x, const std::vector<glm::vec4>& values);
 
   //################################################################################################
-  void setRow(size_t y, glm::vec4 value);
+  void setRow(size_t y, glm::vec4 const& value);
 
   //################################################################################################
-  void setColumn(size_t x, glm::vec4 value);
+  void setColumn(size_t x, glm::vec4 const& value);
 
   //################################################################################################
   //! Simply sets the sise of the image, does NOT scale the contents

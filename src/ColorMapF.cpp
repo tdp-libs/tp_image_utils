@@ -10,10 +10,11 @@
 namespace tp_image_utils
 {
 
+
 //##################################################################################################
 struct ColorMapF::Private
 {
-  std::vector<glm::vec4> data;
+  std::unique_ptr<glm::vec4[]> data;
   size_t width{0};
   size_t height{0};
 
@@ -25,17 +26,23 @@ struct ColorMapF::Private
   std::atomic_int refCount{1};
 
   //################################################################################################
-  void detach(ColorMapF* q)
+  void detach(ColorMapF* q, bool nocopy = false)
   {
     if(refCount==1)
       return;
 
     auto newSD = new Private();
-    newSD->data = data;
-    newSD->width = width;
-    newSD->height = height;
-    newSD->fw = fw;
-    newSD->fh = fh;
+
+    if(!nocopy)
+    {
+      newSD->data.reset(new glm::vec4[width*height]);
+      memcpy(newSD->data.get(), data.get(),width*height*sizeof(glm::vec4));
+
+      newSD->width = width;
+      newSD->height = height;
+      newSD->fw = fw;
+      newSD->fh = fh;
+    }
 
     if(refCount.fetch_sub(1)==1)
       delete this;
@@ -57,10 +64,13 @@ ColorMapF::ColorMapF(size_t w, size_t h, const glm::vec4* data, const glm::vec4&
 {  
   sd->width = w;
   sd->height = h;
-  sd->data.resize(w*h, fill);
-
-  if(data)
-    memcpy(sd->data.data(), data, sd->data.size()*sizeof(glm::vec4));
+  sd->data.reset(new glm::vec4[w*h]);
+  if(data){
+    memcpy(sd->data.get(), data, w*h*sizeof(glm::vec4));
+  }
+  else{
+    std::fill(sd->data.get(), sd->data.get() + w*h, fill);
+  }
 }
 
 //##################################################################################################
@@ -100,26 +110,26 @@ ColorMapF& ColorMapF::operator=(ColorMapF&& other)
 void ColorMapF::fill(const glm::vec4& value)
 {
   sd->detach(this);
-  std::fill(sd->data.begin(), sd->data.end(), value);
+  std::fill(sd->data.get(), sd->data.get() + size(), value);
 }
 
 //##################################################################################################
 const glm::vec4* ColorMapF::constData() const
 {
-  return sd->data.data();
+  return sd->data.get();
 }
 
 //##################################################################################################
 glm::vec4* ColorMapF::data()
 {
   sd->detach(this);
-  return sd->data.data();
+  return sd->data.get();
 }
 
 //##################################################################################################
-const std::vector<glm::vec4>& ColorMapF::constDataVector() const
+const glm::vec4 * const ColorMapF::constDataVector() const
 {
-  return sd->data;
+  return sd->data.get();
 }
 
 //##################################################################################################
@@ -136,8 +146,8 @@ size_t ColorMapF::height() const
 
 //##################################################################################################
 size_t ColorMapF::size() const
-{
-  return sd->data.size();
+{  
+  return sd->width*sd->height;
 }
 
 //##################################################################################################
@@ -149,16 +159,16 @@ void ColorMapF::setPixel(size_t x, size_t y, const glm::vec4& value)
 }
 
 //##################################################################################################
-glm::vec4 ColorMapF::pixel(size_t x, size_t y, const glm::vec4& defaultValue) const
+const glm::vec4& ColorMapF::pixel(size_t x, size_t y, const glm::vec4& defaultValue) const
 {
-  return (x<sd->width && y<sd->height)?sd->data.at((y*sd->width) + x):defaultValue;
+  return (x<sd->width && y<sd->height)?sd->data[(y*sd->width) + x]:defaultValue;
 }
 
 //##################################################################################################
 glm::vec4& ColorMapF::pixelRef(size_t x, size_t y)
 {
   sd->detach(this);
-  return sd->data.at((y*sd->width) + x);
+  return sd->data[(y*sd->width) + x];
 }
 
 //##################################################################################################
@@ -230,9 +240,9 @@ std::vector<glm::vec4> ColorMapF::extractRow(size_t y) const
   if(sd->width>0 && sd->height>0 && y<sd->height)
   {
     result.resize(sd->width);
-    const glm::vec4* s = sd->data.data()+(y*sd->width);
+    const glm::vec4* s = sd->data.get() + y*sd->width;
     glm::vec4* d = result.data();
-    std::memcpy(d, s, sd->width);
+    std::memcpy(d, s, sd->width*sizeof(glm::vec4));
   }
   return result;
 }
@@ -244,7 +254,7 @@ std::vector<glm::vec4> ColorMapF::extractColumn(size_t x) const
   if(sd->width>0 && sd->height>0 && x<sd->width)
   {
     result.resize(sd->height);
-    const glm::vec4* s = sd->data.data()+x;
+    const glm::vec4* s = sd->data.get()+x;
     glm::vec4* d = result.data();
     glm::vec4* dMax = d + sd->height;
 
@@ -261,8 +271,8 @@ void ColorMapF::setRow(size_t y, const std::vector<glm::vec4>& values)
   if(sd->width>0 && sd->height>0 && y<sd->height && values.size() == sd->width)
   {
     const glm::vec4* s = values.data();
-    glm::vec4* d = sd->data.data()+(y*sd->width);
-    std::memcpy(d, s, sd->width);
+    glm::vec4* d = sd->data.get()+(y*sd->width);
+    std::memcpy(d, s, sd->width*sizeof(glm::vec4));
   }
 }
 
@@ -272,7 +282,7 @@ void ColorMapF::setColumn(size_t x, const std::vector<glm::vec4>& values)
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && x<sd->width && values.size() == sd->height)
   {
-    glm::vec4* d = sd->data.data()+x;
+    glm::vec4* d = sd->data.get()+x;
     const glm::vec4* s = values.data();
     const glm::vec4* sMax = s + sd->height;
 
@@ -282,12 +292,12 @@ void ColorMapF::setColumn(size_t x, const std::vector<glm::vec4>& values)
 }
 
 //##################################################################################################
-void ColorMapF::setRow(size_t y, glm::vec4 value)
+void ColorMapF::setRow(size_t y, const glm::vec4 &value)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && y<sd->height)
   {
-    glm::vec4* d = sd->data.data()+(y*sd->width);
+    glm::vec4* d = sd->data.get()+(y*sd->width);
     glm::vec4* dMax = d+sd->width;
     for(; d<dMax; d++)
       (*d) = value;
@@ -295,13 +305,13 @@ void ColorMapF::setRow(size_t y, glm::vec4 value)
 }
 
 //##################################################################################################
-void ColorMapF::setColumn(size_t x, glm::vec4 value)
+void ColorMapF::setColumn(size_t x, const glm::vec4 &value)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && x<sd->width)
   {
-    glm::vec4* d = sd->data.data()+x;
-    glm::vec4* dMax = sd->data.data()+sd->data.size();
+    glm::vec4* d = sd->data.get()+x;
+    glm::vec4* dMax = sd->data.get() + size();
 
     for(; d<dMax; d+=sd->width)
       (*d) = value;
@@ -311,10 +321,10 @@ void ColorMapF::setColumn(size_t x, glm::vec4 value)
 //##################################################################################################
 void ColorMapF::setSize(size_t width, size_t height)
 {
-  sd->detach(this);
-  sd->width  = width;
+  sd->detach(this, true);
+  sd->width = width;
   sd->height = height;
-  sd->data.resize(width*height, glm::vec4(0.0f,0.0f,0.0f,0.0f));
+  sd->data.reset(new glm::vec4[size()]);
 }
 
 //##################################################################################################
@@ -350,8 +360,8 @@ void ColorMapF::clone2IntoOther(ColorMapF& clone) const
   size_t srcW = sd->width*sizeof(glm::vec4);
   for(size_t y=0; y<sd->height; y++)
   {
-    glm::vec4* dst = const_cast<glm::vec4*>(clone.sd->data.data())+(y*clone.sd->width);
-    memcpy(dst, sd->data.data()+(y*sd->width), srcW);
+    glm::vec4* dst = clone.sd->data.get()+(y*clone.sd->width);
+    memcpy(dst, sd->data.get()+(y*sd->width), srcW);
 
     {
       glm::vec4* d=dst+sd->width;
@@ -364,9 +374,9 @@ void ColorMapF::clone2IntoOther(ColorMapF& clone) const
 
   {
     size_t dstW = clone.sd->width*sizeof(glm::vec4);
-    const void* src = clone.sd->data.data()+(clone.sd->width*(sd->height-1));
+    const void* src = clone.sd->data.get()+(clone.sd->width*(sd->height-1));
     for(size_t y=sd->height; y<clone.sd->height; y++)
-      memcpy(const_cast<glm::vec4*>(clone.sd->data.data())+(clone.sd->width*y), src, dstW);
+      memcpy(clone.sd->data.get()+(clone.sd->width*y), src, dstW);
   }
 }
 

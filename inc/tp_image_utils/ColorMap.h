@@ -21,7 +21,7 @@ public:
   ColorMap(const ColorMap& other);
 
   //################################################################################################
-  ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr, TPPixel fill=TPPixel());
+  ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr, TPPixel const& fill=TPPixel());
 
   //################################################################################################
   ~ColorMap();
@@ -36,13 +36,10 @@ public:
   void fill(TPPixel value);
 
   //################################################################################################
-  [[nodiscard]] const TPPixel* constData() const;
+  [[nodiscard]] TPPixel const * const constData() const;
 
   //################################################################################################
   [[nodiscard]] TPPixel* data();
-
-  //################################################################################################
-  [[nodiscard]] const std::vector<TPPixel>& constDataVector() const;
 
   //################################################################################################
   [[nodiscard]] size_t width() const;
@@ -59,10 +56,10 @@ public:
   [[nodiscard]] size_t sizeInBytes() const;
 
   //################################################################################################
-  void setPixel(size_t x, size_t y, TPPixel value);
+  void setPixel(size_t x, size_t y, TPPixel const& value);
 
   //################################################################################################
-  [[nodiscard]] TPPixel pixel(size_t x, size_t y, TPPixel defaultValue=TPPixel()) const;
+  [[nodiscard]] const TPPixel& pixel(size_t x, size_t y, const TPPixel &defaultValue=TPPixel()) const;
 
   //################################################################################################
   [[nodiscard]] TPPixel& pixelRef(size_t x, size_t y);
@@ -94,10 +91,10 @@ public:
   void setColumn(size_t x, const std::vector<TPPixel>& values);
 
   //################################################################################################
-  void setRow(size_t y, TPPixel value);
+  void setRow(size_t y, TPPixel const & value);
 
   //################################################################################################
-  void setColumn(size_t x, TPPixel value);
+  void setColumn(size_t x, const TPPixel &value);
 
   //################################################################################################
   //! Simply sets the sise of the image, does NOT scale the contents
