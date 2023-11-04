@@ -4,13 +4,12 @@
 #include "tp_image_utils/Globals.h"
 
 #include <vector>
-#include <stdint.h>
 
 namespace tp_image_utils
 {
 
 //##################################################################################################
-class IndexMap
+class TP_IMAGE_UTILS_EXPORT IndexMap
 {
 public:
   //################################################################################################

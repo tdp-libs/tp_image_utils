@@ -4,14 +4,13 @@
 #include "tp_image_utils/Globals.h"
 
 #include <vector>
-#include <stdint.h>
 
 namespace tp_image_utils
 {
 class ColorMap;
 
 //##################################################################################################
-class ByteMap
+class TP_IMAGE_UTILS_EXPORT ByteMap
 {
 public:
   //################################################################################################

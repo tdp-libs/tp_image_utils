@@ -106,7 +106,7 @@ bool Point::positionEquals(const Point& other) const
 Point deserializePoint(const std::string& data)
 {
   std::vector<std::string> p;
-  tpSplit(p, data, ',', tp_utils::SplitBehavior::SkipEmptyParts);
+  tpSplit(p, data, ',', TPSplitBehavior::SkipEmptyParts);
 
   try
   {
@@ -131,14 +131,14 @@ std::string serializePoint(const Point& point)
 Line deserializeLine(const std::string& data)
 {
   std::vector<std::string> lines;
-  tpSplit(lines, data, '|', tp_utils::SplitBehavior::SkipEmptyParts);
+  tpSplit(lines, data, '|', TPSplitBehavior::SkipEmptyParts);
 
   Line result;
   result.reserve(lines.size());
   for(const std::string& line : lines)
   {
     std::vector<std::string> parts;
-    tpSplit(parts, line, ',', tp_utils::SplitBehavior::SkipEmptyParts);
+    tpSplit(parts, line, ',', TPSplitBehavior::SkipEmptyParts);
     if(parts.size()==3)
       result.push_back(Point(pointTypeFromString(parts[0]), std::stof(parts[1]), std::stof(parts[2])));
   }
