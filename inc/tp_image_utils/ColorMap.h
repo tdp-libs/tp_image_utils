@@ -35,7 +35,7 @@ public:
   void fill(TPPixel value);
 
   //################################################################################################
-  [[nodiscard]] TPPixel const * const constData() const;
+  [[nodiscard]] TPPixel const * constData() const;
 
   //################################################################################################
   [[nodiscard]] TPPixel* data();

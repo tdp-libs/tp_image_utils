@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstring>
 #include <atomic>
+#include <memory>
 
 namespace tp_image_utils
 {
@@ -127,7 +128,7 @@ glm::vec4* ColorMapF::data()
 }
 
 //##################################################################################################
-const glm::vec4 * const ColorMapF::constDataVector() const
+const glm::vec4 * ColorMapF::constDataVector() const
 {
   return sd->data.get();
 }

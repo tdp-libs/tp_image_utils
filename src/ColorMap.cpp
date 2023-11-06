@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cstring>
 #include <atomic>
+#include <memory>
 
 namespace tp_image_utils
 {
@@ -131,7 +132,7 @@ void ColorMap::fill(TPPixel value)
 }
 
 //##################################################################################################
-const TPPixel * const ColorMap::constData() const
+const TPPixel * ColorMap::constData() const
 {
   return sd->data.get();
 }
