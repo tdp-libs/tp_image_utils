@@ -15,7 +15,6 @@
 
 #if defined(TP_LINUX) || defined(TP_OSX) || defined(TP_WIN32)
 #define TP_SCALE_IN_THREAD
-#include "tp_utils/MutexUtils.h"
 #include <thread>
 #endif
 
@@ -295,27 +294,23 @@ Container scale(const Container& src,
 
 #ifdef TP_SCALE_IN_THREAD
   {
-    TPMutex mutex{TPM};
-    size_t next{0};
-
+    std::atomic<size_t> nextRow{0};
+    auto rowsPtr = rows.data();
     size_t nThreads = std::min(size_t(std::thread::hardware_concurrency()), rows.size());
-
     std::vector<std::thread*> threads;
     threads.reserve(nThreads);
     for(size_t n=0; n<nThreads; n++)
     {
       threads.push_back(new std::thread([&]
       {
-        TP_MUTEX_LOCKER(mutex);
         for(;;)
         {
+          size_t next = nextRow++;
           if(next >= height)
             return;
 
-          const auto& r = rows.at(next);
-          next++;
+          const auto& r = rowsPtr[next];
           {
-            TP_MUTEX_UNLOCKER(mutex);
             execRow(r.dst, r.py, r.sy);
           }
         }
