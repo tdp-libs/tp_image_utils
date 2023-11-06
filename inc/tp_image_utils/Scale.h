@@ -1,15 +1,14 @@
 #ifndef tp_image_utils_Scale_h
 #define tp_image_utils_Scale_h
 
-#include "tp_image_utils/Globals.h"
 #include "tp_image_utils/ByteMap.h"
 #include "tp_image_utils/ColorMap.h"
 #include "tp_image_utils/ColorMapF.h"
 
 #include "tp_utils/TimeUtils.h"
-#include "tp_utils/DebugUtils.h"
 
 #include <functional>
+#include <atomic>
 #include <cmath>
 
 
