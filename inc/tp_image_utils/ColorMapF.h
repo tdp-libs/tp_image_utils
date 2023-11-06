@@ -44,7 +44,7 @@ public:
   [[nodiscard]]glm::vec4* data();
 
   //################################################################################################
-  [[nodiscard]]glm::vec4 const * const constDataVector() const;
+  [[nodiscard]]glm::vec4 const * constDataVector() const;
 
   //################################################################################################
   [[nodiscard]]size_t width() const;
