@@ -3,7 +3,7 @@ TEMPLATE = lib
 
 DEFINES += TP_IMAGE_UTILS_LIBRARY
 
-#SOURCES += src/Globals.cpp
+SOURCES += src/Globals.cpp
 HEADERS += inc/tp_image_utils/Globals.h
 
 SOURCES += src/ByteMap.cpp

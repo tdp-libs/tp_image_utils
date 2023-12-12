@@ -14,6 +14,17 @@
 namespace tp_image_utils
 {
 
+//##################################################################################################
+//! This tries to guess the image type from the image data
+/*!
+This tries to guess the image type from the image data, if that fails it will try to use the name.
+
+\param data - The image data.
+\param name - The file name of the image where available.
+\return The guessed type.
+*/
+std::string guessImageFormat(const std::string& data, const std::string& name);
+
 }
 
 #endif
