@@ -92,10 +92,10 @@ public:
   void setColumn(size_t x, const std::vector<glm::vec4>& values);
 
   //################################################################################################
-  void setRow(size_t y, glm::vec4 const& value);
+  void setRow(size_t y, const glm::vec4& value);
 
   //################################################################################################
-  void setColumn(size_t x, glm::vec4 const& value);
+  void setColumn(size_t x, const glm::vec4& value);
 
   //################################################################################################
   //! Simply sets the sise of the image, does NOT scale the contents

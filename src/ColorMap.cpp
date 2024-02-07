@@ -177,7 +177,7 @@ void ColorMap::setPixel(size_t x, size_t y, const TPPixel& value)
 }
 
 //##################################################################################################
-const TPPixel& ColorMap::pixel(size_t x, size_t y, TPPixel const& defaultValue) const
+const TPPixel& ColorMap::pixel(size_t x, size_t y, const TPPixel& defaultValue) const
 {
   return (x<sd->width && y<sd->height)?sd->data[(y*sd->width) + x]:defaultValue;
 }
@@ -323,7 +323,7 @@ void ColorMap::setRow(size_t y, const TPPixel &value)
 }
 
 //##################################################################################################
-void ColorMap::setColumn(size_t x, TPPixel const& value)
+void ColorMap::setColumn(size_t x, const TPPixel& value)
 {
   sd->detach(this);
   if(sd->width>0 && sd->height>0 && x<sd->width)

@@ -20,7 +20,7 @@ public:
   ColorMap(const ColorMap& other);
 
   //################################################################################################
-  ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr, TPPixel const& fill=TPPixel());
+  ColorMap(size_t w=0, size_t h=0, const TPPixel* data=nullptr, const TPPixel& fill=TPPixel());
 
   //################################################################################################
   ~ColorMap();
@@ -55,7 +55,7 @@ public:
   [[nodiscard]] size_t sizeInBytes() const;
 
   //################################################################################################
-  void setPixel(size_t x, size_t y, TPPixel const& value);
+  void setPixel(size_t x, size_t y, const TPPixel& value);
 
   //################################################################################################
   [[nodiscard]] const TPPixel& pixel(size_t x, size_t y, const TPPixel &defaultValue=TPPixel()) const;
