@@ -81,9 +81,9 @@ void rgbaToRGBE(const ColorMapF& rgba, ColorMap& rgbe)
         {
           int e;
           v = static_cast<float>(std::frexp(v,&e) * 256.0f/v);
-          o->r = uint8_t(i->x * v);
-          o->g = uint8_t(i->y * v);
-          o->b = uint8_t(i->z * v);
+          o->r = uint8_t(std::clamp(i->x * v, 0.0f, 255.0f));
+          o->g = uint8_t(std::clamp(i->y * v, 0.0f, 255.0f));
+          o->b = uint8_t(std::clamp(i->z * v, 0.0f, 255.0f));
           o->a = uint8_t(e + 128);
         }
       }
