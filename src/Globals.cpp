@@ -24,6 +24,8 @@ std::string fileTypeToString(FileType fileType)
     case FileType::mp4         : return "mp4";
     case FileType::VideosEnd   : return "Unknown";
   }
+
+  return "Unknown";
 }
 
 //##################################################################################################
