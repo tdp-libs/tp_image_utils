@@ -13,6 +13,31 @@
 //! A module of image manipulation types.
 namespace tp_image_utils
 {
+//##################################################################################################
+enum class FileType
+{
+  Unknown,
+
+  ImagesStart,
+  jpg,
+  png,
+  gif,
+  tiff,
+  bmp,
+  webp,
+  ico,
+  ImagesEnd,
+
+  VideosStart,
+  mp4,
+  VideosEnd
+};
+
+//##################################################################################################
+std::string fileTypeToString(FileType fileType);
+
+//##################################################################################################
+FileType fileTypeFromString(const std::string& fileType);
 
 //##################################################################################################
 //! This tries to guess the image type from the image data
@@ -23,7 +48,13 @@ This tries to guess the image type from the image data, if that fails it will tr
 \param name - The file name of the image where available.
 \return The guessed type.
 */
-std::string guessImageFormat(const std::string& data, const std::string& name);
+FileType guessImageFormat(const std::string& data, const std::string& name);
+
+//##################################################################################################
+bool isVideo(FileType fileType);
+
+//##################################################################################################
+bool isImage(FileType fileType);
 
 }
 
