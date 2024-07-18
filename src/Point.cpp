@@ -8,7 +8,8 @@ namespace tp_image_utils
 //##################################################################################################
 std::string pointTypeToString(PointType pointType)
 {
-  switch (pointType) {
+  switch(pointType)
+  {
   case PointTypeGeneral:    return "General";
   case PointTypeRectCorner: return "RectCorner";
   case PointTypeRectSide:   return "RectSide";
