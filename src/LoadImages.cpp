@@ -3,41 +3,84 @@
 
 #include "tp_utils/JSONUtils.h"
 #include "tp_utils/Resources.h"
+#include "tp_utils/DebugUtils.h"
 
 #include "base64.h"
 
 namespace tp_image_utils
 {
 
-ColorMap (*loadImage_)(const std::string& path) = nullptr;
-ColorMap (*loadImageFromData_)(const std::string& data) = nullptr;
+ColorMap (*loadImage_)(const std::string& path, std::vector<std::string>& errors) = nullptr;
+ColorMap (*loadImageFromData_)(const std::string& data, std::vector<std::string>& errors) = nullptr;
 std::vector<std::string> (*imagePaths_)(const std::string& path) = nullptr;
 std::vector<ColorMap> (*loadImages_)(const std::string& path, std::vector<std::string>& names, int64_t maxBytes) = nullptr;
 std::vector<std::string> (*getImagePaths_)(const std::string& directory) = nullptr;
 
+namespace
+{
+//##################################################################################################
+struct PrintErrors
+{
+  std::vector<std::string> errors;
+
+  //################################################################################################
+  ~PrintErrors()
+  {
+  for(const auto& error : errors)
+    tpWarning() << error;
+  }
+};
+}
+
 //##################################################################################################
 ColorMap loadImage(const std::string& path)
 {
-  return (loadImage_)?loadImage_(path):ColorMap();
+  PrintErrors e;
+  return loadImage(path, e.errors);
+}
+
+//##################################################################################################
+ColorMap loadImage(const std::string& path, std::vector<std::string>& errors)
+{
+  return (loadImage_)?loadImage_(path, errors):ColorMap();
 }
 
 //##################################################################################################
 ColorMap loadImageFromData(const std::string& data)
 {
-  return (loadImageFromData_)?loadImageFromData_(data):ColorMap();
+  PrintErrors e;
+  return loadImageFromData(data, e.errors);
+}
+
+//##################################################################################################
+ColorMap loadImageFromData(const std::string& data, std::vector<std::string>& errors)
+{
+  return (loadImageFromData_)?loadImageFromData_(data, errors):ColorMap();
 }
 
 //##################################################################################################
 ColorMap loadImageFromResource(const std::string& path)
 {
-  auto res = tp_utils::resource(path);
-  return res.data?loadImageFromData(std::string(res.data, res.size)):ColorMap();
+  PrintErrors e;
+  return loadImageFromResource(path, e.errors);
 }
 
 //##################################################################################################
-std::vector<std::string> imagePaths(const std::string& path)
+ColorMap loadImageFromResource(const std::string& path, std::vector<std::string>& errors)
 {
-  return (imagePaths_)?imagePaths_(path):std::vector<std::string>();
+  auto res = tp_utils::resource(path);
+
+  if(res.data)
+    return loadImageFromData(std::string(res.data, res.size), errors);
+
+  errors.push_back("Failed to find resource: " + path);
+  return ColorMap();
+}
+
+//##################################################################################################
+std::vector<std::string> imagePaths(const std::string& directory)
+{
+  return (imagePaths_)?imagePaths_(directory):std::vector<std::string>();
 }
 
 //##################################################################################################
@@ -56,19 +99,32 @@ std::vector<ColorMap> loadImages(const std::string& path, std::vector<std::strin
 //##################################################################################################
 ColorMap loadImageFromJson(const nlohmann::json& j)
 {
+  PrintErrors e;
+  return loadImageFromJson(j, e.errors);
+}
+
+//##################################################################################################
+ColorMap loadImageFromJson(const nlohmann::json& j, std::vector<std::string>& errors)
+{
   auto w = TPJSONSizeT(j, "w");
   auto h = TPJSONSizeT(j, "h");
   auto data = TPJSONString(j, "data");
 
   if(w<1 || h<1)
+  {
+    errors.push_back("Error with image size, w: " + std::to_string(w) + " h: " + std::to_string(h));
     return ColorMap();
+  }
 
   std::string decoded = base64_decode(data);
 
   size_t bytes = w * h * 4;
 
   if(decoded.size() != bytes)
+  {
+    errors.push_back("Size mismatch, decoded: " + std::to_string(decoded.size()) + " expected: " + std::to_string(bytes));
     return ColorMap();
+  }
 
   ColorMap image(w, h);
   memcpy(image.data(), decoded.data(), bytes);
@@ -77,20 +133,33 @@ ColorMap loadImageFromJson(const nlohmann::json& j)
 
 //##################################################################################################
 ByteMap loadByteMapFromJson(const nlohmann::json& j)
-{  
+{
+  PrintErrors e;
+  return loadByteMapFromJson(j, e.errors);
+}
+
+//##################################################################################################
+ByteMap loadByteMapFromJson(const nlohmann::json& j, std::vector<std::string>& errors)
+{
   auto w = TPJSONSizeT(j, "w");
   auto h = TPJSONSizeT(j, "h");
   auto data = TPJSONString(j, "data");
 
   if(w<1 || h<1)
+  {
+    errors.push_back("Error with image size, w: " + std::to_string(w) + " h: " + std::to_string(h));
     return ByteMap();
+  }
 
   std::string decoded = base64_decode(data);
 
   size_t bytes = w * h;
 
   if(decoded.size() != bytes)
+  {
+    errors.push_back("Size mismatch, decoded: " + std::to_string(decoded.size()) + " expected: " + std::to_string(bytes));
     return ByteMap();
+  }
 
   ByteMap image(w, h);
   memcpy(image.data(), decoded.data(), bytes);
@@ -100,11 +169,21 @@ ByteMap loadByteMapFromJson(const nlohmann::json& j)
 //##################################################################################################
 ColorMapF loadColorMapFFromData(const std::string& data)
 {
+  PrintErrors e;
+  return loadColorMapFFromData(data, e.errors);
+}
+
+//##################################################################################################
+ColorMapF loadColorMapFFromData(const std::string& data, std::vector<std::string>& errors)
+{
   ColorMapF result;
 
   size_t headerSize = sizeof(uint32_t)*2; // Width & Height
   if(data.size() < headerSize)
+  {
+    errors.push_back("Data smaller than expected header, data size: " + std::to_string(data.size()) + " expected: " + std::to_string(headerSize));
     return result;
+  }
 
   const char* src = data.data();
 
@@ -116,7 +195,10 @@ ColorMapF loadColorMapFFromData(const std::string& data)
   size_t totalSize  = headerSize + dataSize;
 
   if(data.size() != totalSize)
+  {
+    errors.push_back("Size mismatch, data size: " + std::to_string(data.size()) + " expected: " + std::to_string(totalSize));
     return result;
+  }
 
   result.setSize(size[0], size[1]);
   std::memcpy(result.data(), src, dataSize);
