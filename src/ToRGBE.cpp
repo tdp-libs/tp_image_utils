@@ -18,7 +18,7 @@ void rgbeToRGBA(const ColorMap& rgbe, ColorMapF& rgba)
 
   glm::vec4* rgbaData = rgba.data();
 
-  std::atomic<std::size_t> c{0};
+  std::atomic<size_t> c{0};
   tp_utils::parallel([&](auto /*locker*/)
   {
     for(;;)
