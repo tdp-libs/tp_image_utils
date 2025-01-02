@@ -128,9 +128,9 @@ public:
   bool sameObject(const ColorMap& other) const;
 
 private:
-  struct Private;
-  friend struct Private;
-  Private* sd;
+  struct SD;
+  friend struct SD;
+  SD* sd;
 };
 }
 

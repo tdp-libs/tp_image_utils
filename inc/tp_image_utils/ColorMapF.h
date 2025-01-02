@@ -127,9 +127,9 @@ public:
   [[nodiscard]]float fh() const;
 
 private:
-  struct Private;
-  friend struct Private;
-  Private* sd;
+  struct SD;
+  friend struct SD;
+  SD* sd;
 };
 }
 

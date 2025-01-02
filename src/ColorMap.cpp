@@ -12,7 +12,7 @@ namespace tp_image_utils
 {
 
 //##################################################################################################
-struct ColorMap::Private
+struct ColorMap::SD
 {
   std::unique_ptr<TPPixel[]> data;
   size_t width{0};
@@ -31,7 +31,7 @@ struct ColorMap::Private
     if(refCount==1)
       return;
 
-    auto newSD = new Private();
+    auto newSD = new SD();
     if(!nocopy)
     {
       newSD->data.reset(new TPPixel[width*height]);
@@ -54,7 +54,7 @@ struct ColorMap::Private
     if(refCount==1)
       return;
 
-    auto newSD = new Private();
+    auto newSD = new SD();
     newSD->data.reset(new TPPixel[newW*newH]);
 
     newSD->width = newW;
@@ -79,7 +79,7 @@ ColorMap::ColorMap(const ColorMap& other):
 
 //##################################################################################################
 ColorMap::ColorMap(size_t w, size_t h, const TPPixel* data, const TPPixel &fill):
-  sd(new Private())
+  sd(new SD())
 {  
   sd->width = w;
   sd->height = h;

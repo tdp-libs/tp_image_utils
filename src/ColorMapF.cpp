@@ -13,7 +13,7 @@ namespace tp_image_utils
 
 
 //##################################################################################################
-struct ColorMapF::Private
+struct ColorMapF::SD
 {
   std::unique_ptr<glm::vec4[]> data;
   size_t width{0};
@@ -32,7 +32,7 @@ struct ColorMapF::Private
     if(refCount==1)
       return;
 
-    auto newSD = new Private();
+    auto newSD = new SD();
 
     if(!nocopy)
     {
@@ -61,7 +61,7 @@ ColorMapF::ColorMapF(const ColorMapF& other):
 
 //##################################################################################################
 ColorMapF::ColorMapF(size_t w, size_t h, const glm::vec4* data, const glm::vec4& fill):
-  sd(new Private())
+  sd(new SD())
 {  
   sd->width = w;
   sd->height = h;
