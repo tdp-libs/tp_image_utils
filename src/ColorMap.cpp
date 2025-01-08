@@ -423,5 +423,22 @@ bool ColorMap::sameObject(const ColorMap& other) const
   return sd == other.sd;
 }
 
+//##################################################################################################
+void convertToTransparent(ColorMap& input)
+{
+  for (size_t y = 0; y < input.height(); ++y)
+  {
+    for (size_t x = 0; x < input.width(); ++x)
+    {
+      TPPixel& pixel = input.pixelRef(x, y);
+      if(pixel.a==0)
+        continue;
+      else if (pixel.r > 100 && pixel.g > 100 && pixel.b > 100)
+        pixel = TPPixel(255, 255, 255, 0);
+      else
+        pixel.a = 255;
+    }
+  }
+}
 
 }

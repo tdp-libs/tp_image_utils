@@ -132,6 +132,10 @@ private:
   friend struct SD;
   SD* sd;
 };
+
+//################################################################################################
+void convertToTransparent(ColorMap& input);
+
 }
 
 #endif
