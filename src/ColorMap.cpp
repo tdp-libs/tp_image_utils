@@ -432,11 +432,11 @@ void convertToTransparent(ColorMap& input)
     {
       TPPixel& pixel = input.pixelRef(x, y);
       if(pixel.a==0)
-        continue;
+        pixel = TPPixel(0, 0, 0, 0);
       else if (pixel.r > 100 && pixel.g > 100 && pixel.b > 100)
-        pixel = TPPixel(255, 255, 255, 0);
+        pixel = TPPixel(0, 0, 0, 0);
       else
-        pixel.a = 255;
+        pixel = TPPixel(0, 0, 0, 255);
     }
   }
 }
