@@ -132,6 +132,12 @@ void ColorMap::fill(TPPixel value)
 }
 
 //##################################################################################################
+bool ColorMap::isValid()
+{
+  return sd->width > 0 && sd->height > 0;
+}
+
+//##################################################################################################
 const TPPixel * ColorMap::constData() const
 {
   return sd->data.get();

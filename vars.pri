@@ -48,7 +48,8 @@ HEADERS += inc/tp_image_utils/ToFloat.h
 SOURCES += src/ToRGBE.cpp
 HEADERS += inc/tp_image_utils/ToRGBE.h
 
-
 SOURCES += src/Scale.cpp
 HEADERS += inc/tp_image_utils/Scale.h
 
+SOURCES += src/PngInfo.cpp
+HEADERS += inc/tp_image_utils/PngInfo.h

@@ -231,6 +231,12 @@ std::string imageAndVideoTypesFilter()
 }
 
 //##################################################################################################
+std::string videoTypesFilter()
+{
+  return "*.mp4";
+}
+
+//##################################################################################################
 std::vector<float> imageToFloatRGB(const ColorMap& image)
 {
   std::vector<float> dest;
