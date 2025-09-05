@@ -35,9 +35,11 @@ void halfScaleInPlace(ColorMap& img)
     return;
   }
 
+  ColorMap newImage{width, height};
+
   size_t sWidth = img.width();
   const TPPixel* s = img.constData();
-  TPPixel* d = img.data();
+  TPPixel* d = newImage.data();
 
   for(size_t y=0; y<height; y++)
   {
@@ -57,7 +59,7 @@ void halfScaleInPlace(ColorMap& img)
     }
   }
 
-  img.setSize(width, height);
+  img = std::move(newImage);
 }
 
 }
